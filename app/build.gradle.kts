@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.trip_to_hyeonchungsa"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -37,6 +37,17 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions { // 추가
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    aaptOptions {
+        noCompress += "augmented_images"
+    }
 }
 
 dependencies {
@@ -51,6 +62,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.ui.text)
+
+    implementation(libs.ar.core) // 추가
+    implementation(libs.javagl.obj) // 추가
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

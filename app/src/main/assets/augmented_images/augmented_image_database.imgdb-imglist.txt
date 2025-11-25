@@ -1,0 +1,1 @@
+test|C:\Users\user\AndroidStudioProjects\ARFunction\app\src\main\assets\augmented_images\test.jpg
