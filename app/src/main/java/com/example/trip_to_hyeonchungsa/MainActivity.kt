@@ -44,11 +44,12 @@ fun QuestDialogueScreen() {
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             // 여기가 오류가 났던 부분입니다. 함수 이름을 통일했습니다.
-            GlassDialogueContainer(
-                name = "민서", // 스크린샷의 이름
-                content = "반가워요!\n이곳은 조선시대 궁궐이에요.\n저와 함께 탐험해볼까요?"
-            )
+
         }
+        GlassDialogueContainer(
+            name = "민서", // 스크린샷의 이름
+            content = "반가워요!\n이곳은 조선시대 궁궐이에요.\n저와 함께 탐험해볼까요?"
+        )
     }
 }
 
@@ -57,70 +58,76 @@ fun GlassDialogueContainer(
     name: String,
     content: String
 ) {
-    // 1. 유리 효과 컨테이너 (바깥쪽 큰 박스)
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(28.dp))
-            .background(
-                // 배경을 더 뿌옇게 만들기 위해 불투명도(alpha)를 높임
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.7f), // 위쪽
-                        Color.White.copy(alpha = 0.5f)  // 아래쪽
+            .align(Alignment.BottomCenter)
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+    ) {
+        // 여기가 오류가 났던 부분입니다. 함수 이름을 통일했습니다.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(28.dp))
+                .background(
+                    // 배경을 더 뿌옇게 만들기 위해 불투명도(alpha)를 높임
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.7f), // 위쪽
+                            Color.White.copy(alpha = 0.5f)  // 아래쪽
+                        )
                     )
                 )
-            )
-            .border(
-                border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.8f)),
-                shape = RoundedCornerShape(28.dp)
-            )
-            .padding(20.dp)
-    ) {
-        Column {
-            // 2. 이름 칸 (오른쪽 정렬)
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color.White,
-                    shadowElevation = 4.dp
-                ) {
-                    Text(
-                        text = name,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier.padding(horizontal = 35.dp, vertical = 8.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 3. 내용 칸 (상하 길이 늘림)
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 200.dp), // 요청하신대로 높이를 늘렸습니다.
-                shape = RoundedCornerShape(22.dp),
-                color = Color.White,
-                shadowElevation = 2.dp
-            ) {
+                .border(
+                    border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.8f)),
+                    shape = RoundedCornerShape(28.dp)
+                )
+                .padding(20.dp)
+        ) {
+            Column {
+                // 2. 이름 칸 (오른쪽 정렬)
                 Box(
-                    modifier = Modifier.padding(24.dp),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
-                    Text(
-                        text = content,
-                        fontSize = 18.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 26.sp
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = Color.White,
+                        shadowElevation = 4.dp
+                    ) {
+                        Text(
+                            text = name,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(horizontal = 35.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 3. 내용 칸 (상하 길이 늘림)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 200.dp), // 요청하신대로 높이를 늘렸습니다.
+                    shape = RoundedCornerShape(22.dp),
+                    color = Color.White,
+                    shadowElevation = 2.dp
+                ) {
+                    Box(
+                        modifier = Modifier.padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = content,
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 26.sp
+                        )
+                    }
                 }
             }
         }
