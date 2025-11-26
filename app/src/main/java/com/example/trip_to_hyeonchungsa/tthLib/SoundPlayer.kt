@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.trip_to_hyeonchungsa.tthLib
 
 import android.media.MediaPlayer
 import android.util.Log
@@ -87,3 +87,4 @@ fun SoundPlayer(
     // content 블록 실행 (이 블록이 활성화된 동안만 위의 음악이 재생됨)
     content()
 }
+
