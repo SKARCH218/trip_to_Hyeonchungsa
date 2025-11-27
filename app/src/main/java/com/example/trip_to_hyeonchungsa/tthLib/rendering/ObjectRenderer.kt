@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.arfunction.rendering
+package com.example.trip_to_hyeonchungsa.tthLib.rendering
 
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.Matrix
-import com.example.arfunction.rendering.ShaderUtil.loadFragmentShader
-import com.example.arfunction.rendering.ShaderUtil.loadVertexShader
+import com.example.trip_to_hyeonchungsa.tthLib.rendering.ShaderUtil.loadFragmentShader
+import com.example.trip_to_hyeonchungsa.tthLib.rendering.ShaderUtil.loadVertexShader
 import de.javagl.obj.Obj
 import de.javagl.obj.ObjReader
 import de.javagl.obj.ObjUtils

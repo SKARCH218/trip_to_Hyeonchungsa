@@ -1,6 +1,6 @@
 # AR Image Database Auto-Generator
 
-$imagesFolder = "C:\Users\user\AndroidStudioProjects\ARFunction\app\src\main\assets\augmented_images"
+$imagesFolder = "C:\Users\user\AndroidStudioProjects\trip_to_Hyeonchungsa\app\src\main\assets\augmented_images"
 $imageListPath = Join-Path $imagesFolder "image_list.txt"
 $outputDbPath = Join-Path $imagesFolder "augmented_image_database.imgdb"
 $arcoreimgPath = "C:\Users\user\Downloads\arcore-android-sdk-1.51.0\tools\arcoreimg\windows\arcoreimg.exe"
