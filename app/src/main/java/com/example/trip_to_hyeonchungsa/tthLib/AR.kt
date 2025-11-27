@@ -33,23 +33,6 @@ import com.example.arfunction.rendering.DisplayRotationHelper
 import com.example.arfunction.rendering.ObjectRenderer
 import com.example.arfunction.rendering.BackgroundRenderer
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            // 테스트용 예시 - 실제 사용 시에는 이 함수만 다른 프로젝트에서 호출
-            AugmentedImageArView(
-                imageName = "test",
-                modelPath = "models/andy.obj",
-                scale = 0.01f,
-                onModelClick = {
-                    clearAllModels()
-                }
-            )
-        }
-    }
-}
-
 /**
  * AR 기능을 수행하는 Composable 함수
  * @param imageName 인식할 이미지 이름 (확장자 제외)
