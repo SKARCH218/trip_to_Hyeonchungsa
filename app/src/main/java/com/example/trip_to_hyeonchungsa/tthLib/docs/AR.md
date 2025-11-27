@@ -3,18 +3,6 @@
 ARCore를 사용하여 이미지를 인식하고 3D 모델을 표시하는 Android Compose 함수입니다.  
 **단 하나의 함수**로 AR 기능을 다른 프로젝트에 쉽게 통합할 수 있습니다.
 
-## 📋 목차
-
-- [기능](#기능)
-- [요구사항](#요구사항)
-- [프로젝트 구조](#프로젝트-구조)
-- [설치 및 실행](#설치-및-실행)
-- [사용 방법](#사용-방법)
-- [제어 함수](#제어-함수)
-- [자동화 도구](#자동화-도구)
-- [문제 해결](#문제-해결)
-- [다른 프로젝트에 통합하기](#다른-프로젝트에-통합하기)
-
 ## ✨ 기능
 
 - **이미지 인식**: ARCore를 사용한 실시간 이미지 추적
@@ -46,56 +34,21 @@ ARFunction/
 │   │       └── ObjectRenderer.kt        # 3D 모델 렌더링
 │   ├── assets/
 │   │   ├── augmented_images/            # 인식할 이미지 파일
-│   │   │   ├── test.jpg
+│   │   │   ├── image.jpg
 │   │   │   └── augmented_image_database.imgdb  # AR 데이터베이스
 │   │   └── models/                      # 3D 모델 파일 (OBJ)
-│   │       └── andy.obj
+│   │       └── model.obj
 │   └── AndroidManifest.xml
 ├── build_ar_database.ps1                # 데이터베이스 자동 생성 스크립트
 └── README.md
 ```
 
-## 🚀 설치 및 실행
-
-### 1. 프로젝트 클론 또는 다운로드
-
-```bash
-git clone <repository-url>
-cd ARFunction
-```
-
-### 2. Android Studio에서 프로젝트 열기
-
-1. Android Studio 실행
-2. **File > Open** 선택
-3. `ARFunction` 폴더 선택
-
-### 3. ARCore 이미지 데이터베이스 생성
-
-#### 방법 A: 자동화 스크립트 사용 (권장)
+## ARCore 이미지 데이터베이스 생성 방법
 
 ```powershell
 # PowerShell에서 실행
 .\build_ar_database.ps1
 ```
-
-#### 방법 B: 수동 생성
-
-1. [ARCore SDK](https://github.com/google-ar/arcore-android-sdk/releases) 다운로드
-2. `tools/arcoreimg/bin/arcoreimg.exe` 경로 확인
-3. 이미지를 `app/src/main/assets/augmented_images/` 폴더에 추가
-4. 명령어 실행:
-
-```powershell
-# Windows
-C:\path\to\arcoreimg.exe build-db --input_image_list_path=image_list.txt --output_db_path=app\src\main\assets\augmented_images\augmented_image_database.imgdb
-```
-
-### 4. 앱 빌드 및 실행
-
-1. ARCore 지원 기기를 USB로 연결 (개발자 모드 활성화)
-2. Android Studio에서 **Run > Run 'app'** (Shift+F10)
-3. Google Play 스토어에서 ARCore 서비스 자동 설치
 
 ## 📖 사용 방법
 
@@ -106,8 +59,8 @@ C:\path\to\arcoreimg.exe build-db --input_image_list_path=image_list.txt --outpu
 ```kotlin
 setContent {
     AugmentedImageArView(
-        imageName = "test",           // 인식할 이미지 이름 (확장자 제외)
-        modelPath = "models/andy.obj", // 표시할 3D 모델 경로
+        imageName = "image",           // 인식할 이미지 이름 (확장자 제외)
+        modelPath = "models/model.obj", // 표시할 3D 모델 경로
         scale = 0.1f                   // 모델 크기 (1.0 = 원본 크기)
     )
 }
@@ -117,8 +70,8 @@ setContent {
 
 ```kotlin
 AugmentedImageArView(
-    imageName = "test",
-    modelPath = "models/andy.obj",
+    imageName = "image",
+    modelPath = "models/mofel.obj",
     scale = 0.1f,
     onModelClick = { imageName ->
         // 화면 중앙을 터치하면 호출됨
@@ -153,7 +106,7 @@ AugmentedImageArView(
    ```kotlin
    AugmentedImageArView(
        imageName = "my_image",  // 확장자 제외
-       modelPath = "models/andy.obj",
+       modelPath = "models/model.obj",
        scale = 0.15f
    )
    ```
@@ -364,89 +317,6 @@ AR 기능을 제공하는 Composable 함수입니다.
 
 ---
 
-## 🔄 다른 프로젝트에 통합하기
-
-이 AR 기능을 다른 Android 프로젝트에서 사용하려면 필요한 파일만 복사하면 됩니다.
-
-### 필수 파일 목록
-
-**1. Kotlin 소스 코드** (`app/src/main/java/com/yourcompany/yourapp/ar/`):
-- `MainActivity.kt` → `AugmentedImageArView.kt`로 이름 변경하고 함수만 분리
-- `rendering/BackgroundRenderer.kt`
-- `rendering/DisplayRotationHelper.kt`
-- `rendering/ObjectRenderer.kt`
-
-**2. Assets** (`app/src/main/assets/`):
-- `augmented_images/` 폴더 전체 (이미지 + .imgdb 파일)
-- `models/` 폴더 전체 (OBJ 파일)
-
-**3. 설정 파일**:
-- `build.gradle.kts`: ARCore 의존성 추가
-- `AndroidManifest.xml`: 권한 및 메타데이터 추가
-
-### 통합 구조 예시
-
-```
-YourProject/                                    # 메인 프로젝트
-├── app/src/main/
-│   ├── java/com/yourcompany/yourapp/
-│   │   ├── MainActivity.kt                     # 메인 액티비티
-│   │   └── ar/                                 # AR 모듈 폴더
-│   │       ├── AugmentedImageArView.kt         # AR 함수 (이 파일만 import)
-│   │       ├── ARControlFunctions.kt           # 제어 함수 (선택)
-│   │       └── rendering/
-│   │           ├── BackgroundRenderer.kt
-│   │           ├── DisplayRotationHelper.kt
-│   │           └── ObjectRenderer.kt
-│   ├── assets/
-│   │   ├── augmented_images/
-│   │   │   └── augmented_image_database.imgdb
-│   │   └── models/
-│   │       └── andy.obj
-│   └── AndroidManifest.xml
-└── build.gradle.kts
-```
-
-**메인 프로젝트의 MainActivity에서 사용:**
-
-```kotlin
-// app/src/main/java/com/yourcompany/yourapp/MainActivity.kt
-package com.yourcompany.yourapp
-
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import com.yourcompany.yourapp.ar.AugmentedImageArView  // AR 모듈에서 import
-import com.yourcompany.yourapp.ar.stopARSession
-import com.yourcompany.yourapp.ar.clearAllModels
-import com.yourcompany.yourapp.ar.pauseImageTracking
-import com.yourcompany.yourapp.ar.resumeImageTracking
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            // AR 기능 사용
-            AugmentedImageArView(
-                imageName = "test",
-                modelPath = "models/andy.obj",
-                scale = 0.1f,
-                onModelClick = { imageName ->
-                    pauseImageTracking()
-                    Toast.makeText(this, "$imageName 클릭!", Toast.LENGTH_SHORT).show()
-                }
-            )
-            
-            // AR 종료 버튼 추가
-            Button(onClick = {
-                stopARSession()
-                // 다른 화면으로 이동
-            }) {
-                Text("AR 종료")
-            }
-        }
-    }
-}
-
 ### 필수 설정
 
 **build.gradle.kts (app 레벨)**에 ARCore 의존성 추가:
@@ -471,41 +341,16 @@ dependencies {
 </application>
 ```
 
-### 체크리스트
+**libs.versions.toml**에 ARCore 라이브러리 및 버전 추가:
 
-- [ ] A 폴더: `ar/` 패키지에 4개 Kotlin 파일 복사
-- [ ] Assets: `augmented_images/`, `models/` 폴더 복사
-- [ ] `build.gradle.kts`: ARCore 의존성 추가
-- [ ] `AndroidManifest.xml`: 권한 및 메타데이터 추가
-### 통합 체크리스트
+```toml
+[versions]
+arcore = "1.44.0"
+javagl-obj = "0.4.0"
 
-- [ ] AR 소스 파일 복사 (MainActivity.kt → AugmentedImageArView.kt + rendering 폴더)
-- [ ] Assets 폴더 복사 (augmented_images, models)
-- [ ] build.gradle.kts에 ARCore 의존성 추가
-- [ ] AndroidManifest.xml에 권한 및 메타데이터 추가
-- [ ] Package 이름 변경 (`package com.example.arfunction` → `package com.yourcompany.yourapp.ar`)
-- [ ] MainActivity에서 `import com.yourcompany.yourapp.ar.AugmentedImageArView`
-
-### 주의사항
-
-1. **Package 이름**: 모든 `.kt` 파일 상단의 `package` 선언을 프로젝트에 맞게 수정
-2. **Assets 병합**: 기존 assets 폴더와 병합됩니다
-3. **함수 분리**: `AugmentedImageArView`, `setupAugmentedImageDatabase`, `handleFrame` 함수 및 제어 함수들(`stopARSession`, `clearAllModels`, `pauseImageTracking`, `resumeImageTracking`)을 모두 복사
-4. **데이터베이스**: 이미지 변경 시 `build_ar_database.ps1` 재실행
-
-### AR 종료 후 다른 화면 전환
-
-```kotlin
-Button(onClick = {
-    stopARSession()  // AR 세션 종료
-    navController.navigate("homeScreen")  // 다른 화면으로 이동
-}) {
-    Text("홈으로 돌아가기")
-}
+[libraries]
+ar-core = { group = "com.google.ar", name = "core", version.ref = "arcore" }
+javagl-obj = { group = "de.javagl", name = "obj", version.ref = "javagl-obj" }
 ```
 
-AR을 종료해도 **앱은 계속 실행**되며, 다른 액티비티나 화면으로 정상적으로 전환됩니다.
-
----
-
-**마지막 업데이트**: 2025년 11월 26일
+**마지막 업데이트**: 2025년 11월 27일
