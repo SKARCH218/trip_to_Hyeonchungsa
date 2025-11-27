@@ -29,9 +29,9 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 import java.io.IOException
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
-import com.example.arfunction.rendering.DisplayRotationHelper
-import com.example.arfunction.rendering.ObjectRenderer
-import com.example.arfunction.rendering.BackgroundRenderer
+import com.example.trip_to_hyeonchungsa.tthLib.rendering.DisplayRotationHelper
+import com.example.trip_to_hyeonchungsa.tthLib.rendering.ObjectRenderer
+import com.example.trip_to_hyeonchungsa.tthLib.rendering.BackgroundRenderer
 
 /**
  * AR 기능을 수행하는 Composable 함수
