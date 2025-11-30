@@ -22,7 +22,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.core.app.ActivityCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
-import com.example.compass.R
+import com.example.trip_to_hyeonchungsa.R
+
 
 @Composable
 fun Compass(
