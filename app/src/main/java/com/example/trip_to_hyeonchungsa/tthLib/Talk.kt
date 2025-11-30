@@ -3,6 +3,7 @@ package com.example.trip_to_hyeonchungsa.tthLib
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,7 +31,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun Bubble(
     name: String,
-    content: String
+    content: String,
+    onClick: (() -> Unit)? = null
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -44,6 +47,15 @@ fun Bubble(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(28.dp))
+                    .then(
+                        if (onClick != null) {
+                            Modifier.pointerInput(Unit) {
+                                detectTapGestures(onTap = { onClick() })
+                            }
+                        } else {
+                            Modifier
+                        }
+                    )
                     .background(
                         // 배경을 더 뿌옇게 만들기 위해 불투명도(alpha)를 높임
                         brush = Brush.verticalGradient(

@@ -1,20 +1,39 @@
 package com.example.trip_to_hyeonchungsa.tthLib
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 
 @Composable
-fun SetBackground(imageName: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun SetBackground(
+    imageName: String,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
     val context = LocalContext.current
     val resourceId = context.resources.getIdentifier(imageName, "drawable", context.packageName)
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .then(
+                if (onClick != null) {
+                    Modifier.pointerInput(Unit) {
+                        detectTapGestures(onTap = { onClick() })
+                    }
+                } else {
+                    Modifier
+                }
+            )
+    ) {
         if (resourceId != 0) {
             Image(
                 painter = painterResource(id = resourceId),
