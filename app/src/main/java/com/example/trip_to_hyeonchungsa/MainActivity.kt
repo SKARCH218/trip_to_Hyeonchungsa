@@ -21,6 +21,54 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "오누이",
+            content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "누이",
+            content = "같이 과거로 가서 현충사를 구해보지 않을래?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "누이",
+            content = "현충사를 구하기 위해선 기념관을 가서 유물들을 찾아야해!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "오라비",
+            content = "내가 나침반을 줄게 같이 기념관을 찾아보자.",
+            onClick = onNext
+        )
+    }
+}
 // 첫 번째 화면 - 인사 화면
 @Preview(showBackground = true)
 @Composable
@@ -28,7 +76,7 @@ fun Screen1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "img_example") {
         Bubble(
             name = "오누이",
-            content = "안녕, 우리 함께 \n현충사를 구해보지 않을래?",
+            content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
             onClick = onNext
         )
     }
