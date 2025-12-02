@@ -10,7 +10,6 @@ import com.example.trip_to_hyeonchungsa.tthLib.SetBackground
 import com.example.trip_to_hyeonchungsa.tthLib.ScreenTransitionManager
 import com.example.trip_to_hyeonchungsa.tthLib.TransitionType
 import com.example.trip_to_hyeonchungsa.tthLib.rememberScreenTransitionState
-import kotlinx.coroutines.launch
 
 // 실제 MainActivity 클래스
 class MainActivity : ComponentActivity() {
@@ -22,21 +21,71 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 첫 번째 화면 - 인사 화면
+
+@Preview(showBackground = true)
 @Composable
-fun Screen1_Greeting(onNext: () -> Unit) {
+fun Screen1_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "오누이",
+            content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "누이",
+            content = "같이 과거로 가서 현충사를 구해보지 않을래?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "누이",
+            content = "현충사를 구하기 위해선 기념관을 가서 유물들을 찾아야해!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "오라비",
+            content = "내가 나침반을 줄게 같이 기념관을 찾아보자.",
+            onClick = onNext
+        )
+    }
+}
+// 첫 번째 화면 - 인사 화면
+@Preview(showBackground = true)
+@Composable
+fun Screen1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "img_example") {
         Bubble(
             name = "오누이",
-            content = "안녕, 우리 함께 \n현충사를 구해보지 않을래?",
+            content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
             onClick = onNext
         )
     }
 }
 
 // 두 번째 화면 - 역사 소개
+@Preview(showBackground = true)
 @Composable
-fun Screen2_History(onNext: () -> Unit) {
+fun Screen2_History(onNext: () -> Unit = {}) {
     SetBackground(imageName = "img_example") {
         Bubble(
             name = "오누이",
@@ -47,8 +96,9 @@ fun Screen2_History(onNext: () -> Unit) {
 }
 
 // 세 번째 화면 - 현충사 소개
+@Preview(showBackground = true)
 @Composable
-fun Screen3_Introduction(onNext: () -> Unit) {
+fun Screen3_Introduction(onNext: () -> Unit = {}) {
     SetBackground(imageName = "img_example") {
         Bubble(
             name = "오누이",
@@ -58,55 +108,19 @@ fun Screen3_Introduction(onNext: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun Main() {
     // 화면 전환 상태 관리
     val transitionState = rememberScreenTransitionState()
-    val coroutineScope = rememberCoroutineScope()
 
-    // 여러 화면 정의
-    val screens = listOf<@Composable () -> Unit>(
-        {
-            Screen1_Greeting {
-                coroutineScope.launch {
-                    transitionState.transitionTo(
-                        screenIndex = 1,
-                        type = TransitionType.FADE,
-                        durationMillis = 500
-                    )
-                }
-            }
-        },
-        {
-            Screen2_History {
-                coroutineScope.launch {
-                    transitionState.transitionTo(
-                        screenIndex = 2,
-                        type = TransitionType.SLIDE_LEFT,
-                        durationMillis = 500
-                    )
-                }
-            }
-        },
-        {
-            Screen3_Introduction {
-                coroutineScope.launch {
-                    transitionState.transitionTo(
-                        screenIndex = 0,
-                        type = TransitionType.SCALE,
-                        durationMillis = 500
-                    )
-                }
-            }
-        }
-    )
-
-    // 화면 전환 매니저로 화면 전환 처리
+    // 화면 전환 매니저로 화면 관리
     ScreenTransitionManager(
-        currentScreen = transitionState.currentScreen,
-        transitionType = transitionState.transitionType,
+        state = transitionState,
         durationMillis = 500,
-        screens = screens
+        screens = listOf(
+            { Screen1_Greeting { transitionState.goTo(1, TransitionType.FADE) } },
+            { Screen2_History { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
+            { Screen3_Introduction { transitionState.goTo(0, TransitionType.SCALE) } }
+        )
     )
 }
