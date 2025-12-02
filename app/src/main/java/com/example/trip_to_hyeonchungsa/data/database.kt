@@ -28,6 +28,14 @@ interface InventoryDao {
     // 획득한 모든 아이템의 ID 목록을 가져옴
     @Query("SELECT * FROM owned_items")
     suspend fun getOwnedItems(): List<OwnedItem>
+
+    // 인벤토리에서 아이템 제거
+    @Query("DELETE FROM owned_items WHERE itemId = :itemId")
+    suspend fun removeItem(itemId: Int)
+
+    // 인벤토리의 모든 아이템 제거
+    @Query("DELETE FROM owned_items")
+    suspend fun clearInventory()
 }
 
 // Database: Room 데이터베이스의 메인 클래스입니다.

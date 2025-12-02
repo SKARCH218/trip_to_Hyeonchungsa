@@ -21,28 +21,6 @@ ARCore를 사용하여 이미지를 인식하고 3D 모델을 표시하는 Andro
 - **ARCore 지원 기기**: [ARCore 지원 기기 목록](https://developers.google.com/ar/devices)
 - **카메라 권한**: 런타임에서 자동 요청
 
-## 📁 프로젝트 구조
-
-```
-ARFunction/
-├── app/src/main/
-│   ├── java/com/example/arfunction/
-│   │   ├── MainActivity.kt              # 메인 액티비티 및 AR 뷰
-│   │   └── rendering/
-│   │       ├── BackgroundRenderer.kt    # 카메라 배경 렌더링
-│   │       ├── DisplayRotationHelper.kt # 화면 회전 처리
-│   │       └── ObjectRenderer.kt        # 3D 모델 렌더링
-│   ├── assets/
-│   │   ├── augmented_images/            # 인식할 이미지 파일
-│   │   │   ├── image.jpg
-│   │   │   └── augmented_image_database.imgdb  # AR 데이터베이스
-│   │   └── models/                      # 3D 모델 파일 (OBJ)
-│   │       └── model.obj
-│   └── AndroidManifest.xml
-├── build_ar_database.ps1                # 데이터베이스 자동 생성 스크립트
-└── README.md
-```
-
 ## ARCore 이미지 데이터베이스 생성 방법
 
 ```powershell
@@ -73,21 +51,9 @@ AugmentedImageArView(
     imageName = "image",
     modelPath = "models/mofel.obj",
     scale = 0.1f,
-    onModelClick = { imageName ->
-        // 화면 중앙을 터치하면 호출됨
-        Toast.makeText(context, "$imageName 클릭!", Toast.LENGTH_SHORT).show()
+    onModelClick = { 
+        // 클릭 시 실행될 코드
     }
-)
-```
-
-### 디버그 메시지 숨기기
-
-```kotlin
-AugmentedImageArView(
-    imageName = "test",
-    modelPath = "models/andy.obj",
-    scale = 0.1f,
-    showDebugInfo = false  // 하단 메시지 숨김
 )
 ```
 
@@ -102,19 +68,9 @@ AugmentedImageArView(
    .\build_ar_database.ps1
    ```
 
-3. **코드 수정**:
-   ```kotlin
-   AugmentedImageArView(
-       imageName = "my_image",  // 확장자 제외
-       modelPath = "models/model.obj",
-       scale = 0.15f
-   )
-   ```
-
 ### 3D 모델 추가하기
 
 1. OBJ 형식의 3D 모델을 `app/src/main/assets/models/` 폴더에 복사
-2. `modelPath` 파라미터에 경로 지정
 
 **주의**: 현재 앱은 **OBJ 파일 형식만** 지원합니다. GLB/GLTF 형식은 별도의 로더 라이브러리가 필요합니다.
 

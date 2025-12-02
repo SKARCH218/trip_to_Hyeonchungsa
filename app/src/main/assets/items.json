@@ -15,6 +15,12 @@
     "id": 3,
     "name": "활",
     "lore": "활을 획득했다!",
-    "image": "bow_image"
+    "image": "img_example"
+  },
+  {
+    "id": 4,
+    "name": "현판",
+    "lore": "현충사 현판",
+    "image": "hyonphan"
   }
 ]

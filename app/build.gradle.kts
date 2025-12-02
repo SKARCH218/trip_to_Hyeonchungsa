@@ -38,8 +38,8 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions { // 추가
-        kotlinCompilerExtensionVersion = "1.5.14"
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -47,6 +47,7 @@ android {
         }
     }
     aaptOptions {
+
         noCompress += "augmented_images"
     }
     buildToolsVersion = "36.0.0"

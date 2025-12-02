@@ -38,4 +38,14 @@ class ItemRepository(private val context: Context) {
     suspend fun addItemToInventory(itemId: Int) {
         inventoryDao.addItem(OwnedItem(itemId = itemId))
     }
+
+    // 인벤토리에서 아이템을 제거하는 함수
+    suspend fun removeItemFromInventory(itemId: Int) {
+        inventoryDao.removeItem(itemId)
+    }
+
+    // 인벤토리의 모든 아이템을 제거하는 함수
+    suspend fun clearInventory() {
+        inventoryDao.clearInventory()
+    }
 }

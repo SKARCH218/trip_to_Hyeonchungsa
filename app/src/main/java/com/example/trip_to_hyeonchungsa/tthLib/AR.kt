@@ -50,7 +50,7 @@ fun AugmentedImageArView(
     scale: Float,
     modifier: Modifier = Modifier,
     onModelClick: ((String) -> Unit)? = null,
-    showDebugInfo: Boolean = true,
+    showDebugInfo: Boolean = false,
     autoStart: Boolean = true
 ) {
     val context = LocalContext.current
