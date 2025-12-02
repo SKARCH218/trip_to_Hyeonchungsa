@@ -73,11 +73,10 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen2_1_Greeting(onNext: () -> Unit = {}) {
+fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
     SetBackground(imageName = "navi") {
-        Compass(37.5665, 126.9780)
+        //Compass(37.5665, 126.9780)
     }
-
 }
 
 @Preview(showBackground = true)
@@ -104,6 +103,45 @@ fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun Screen3_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "pan") {
+        Bubble(
+            name = "누이",
+            content = "오! 찾았구나 이 현판은 이 현판은 숙종 임금이 직접 쓴 것으로 구현충사에 걸려 있던거야 그럼 복숭아 모양처럼 생긴 잔 을 찾아볼까? 이 근처에 있어!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen3_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "cup") {
+        Bubble(
+            name = "오라비",
+            content = "잘 찾았어 이 복숭아 모양 술잔은 난중일기의 ‘화주배 한 쌍’으로 추정되는 얇은 금도금 술잔으로",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen3_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "cup") {
+        Bubble(
+            name = "오라비",
+            content = """
+                지금은 손잡이 조각의 깊은 홈에서만 금 흔적이 남아 있어
+                그럼 다음 임진일기를 찾아보자 근처에 있으니 찾아보자! 
+                    """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
+
 
 @Composable
 fun Main() {
@@ -119,9 +157,13 @@ fun Main() {
             { Screen1_2_Greeting { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
             { Screen1_3_Greeting { transitionState.goTo(3, TransitionType.SCALE) } },
             {Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
-            { Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
+            //{ Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
             { Screen2_2_Greeting{ transitionState.goTo(6, TransitionType.SCALE) } },
-            { Screen2_3_Greeting{ transitionState.goTo(0, TransitionType.SCALE) } }
+            { Screen2_3_Greeting{ transitionState.goTo(7, TransitionType.SCALE) } },
+            { Screen3_1_Greeting{ transitionState.goTo(8, TransitionType.SCALE) } },
+            { Screen3_2_Greeting{ transitionState.goTo(9, TransitionType.SCALE) } },
+            { Screen3_3_Greeting{ transitionState.goTo(10, TransitionType.SCALE) } },
+
         )
     )
 }

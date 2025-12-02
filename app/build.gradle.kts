@@ -49,6 +49,7 @@ android {
     aaptOptions {
         noCompress += "augmented_images"
     }
+    buildToolsVersion = "36.0.0"
 
 }
 
