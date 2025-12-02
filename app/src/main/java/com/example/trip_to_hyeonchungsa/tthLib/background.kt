@@ -1,4 +1,4 @@
-package com.example.tthLib
+package com.example.trip_to_hyeonchungsa.tthLib
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
