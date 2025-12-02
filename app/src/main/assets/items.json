@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "거북선",
+    "lore": "거북선 모형을 획득했다!",
+    "image": "turtle_ship_image"
+  },
+  {
+    "id": 2,
+    "name": "난중일기",
+    "lore": "난중일기 사본을 획득했다!",
+    "image": "nanjungilgi_image"
+  },
+  {
+    "id": 3,
+    "name": "활",
+    "lore": "활을 획득했다!",
+    "image": "bow_image"
+  }
+]
