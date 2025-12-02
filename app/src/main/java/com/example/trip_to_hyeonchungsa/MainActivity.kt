@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.trip_to_hyeonchungsa.tthLib.Bubble
+import com.example.trip_to_hyeonchungsa.tthLib.Compass
 import com.example.trip_to_hyeonchungsa.tthLib.SetBackground
 import com.example.trip_to_hyeonchungsa.tthLib.ScreenTransitionManager
 import com.example.trip_to_hyeonchungsa.tthLib.TransitionType
@@ -69,44 +70,40 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
         )
     }
 }
-// 첫 번째 화면 - 인사 화면
+
 @Preview(showBackground = true)
 @Composable
-fun Screen1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "img_example") {
+fun Screen2_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "navi") {
+        Compass(37.5665, 126.9780)
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen2_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "give") {
         Bubble(
-            name = "오누이",
-            content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
+            name = "오라비",
+            content = "기념관 안에 현충사 현판이 있어 찾아줄래?.",
             onClick = onNext
         )
     }
 }
 
-// 두 번째 화면 - 역사 소개
 @Preview(showBackground = true)
 @Composable
-fun Screen2_History(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "img_example") {
+fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "give") {
         Bubble(
-            name = "오누이",
-            content = "좋아! 그럼 먼저 \n현충사의 역사에 대해 알아볼까?",
+            name = "누이",
+            content = "현판은 입구 근처에 있어 찾아봐!",
             onClick = onNext
         )
     }
 }
 
-// 세 번째 화면 - 현충사 소개
-@Preview(showBackground = true)
-@Composable
-fun Screen3_Introduction(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "img_example") {
-        Bubble(
-            name = "오누이",
-            content = "여기가 바로 이순신 장군을 \n모시는 현충사야!",
-            onClick = onNext
-        )
-    }
-}
 
 @Composable
 fun Main() {
@@ -118,9 +115,13 @@ fun Main() {
         state = transitionState,
         durationMillis = 500,
         screens = listOf(
-            { Screen1_Greeting { transitionState.goTo(1, TransitionType.FADE) } },
-            { Screen2_History { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
-            { Screen3_Introduction { transitionState.goTo(0, TransitionType.SCALE) } }
+            { Screen1_1_Greeting { transitionState.goTo(1, TransitionType.FADE) } },
+            { Screen1_2_Greeting { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
+            { Screen1_3_Greeting { transitionState.goTo(3, TransitionType.SCALE) } },
+            {Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
+            { Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
+            { Screen2_2_Greeting{ transitionState.goTo(6, TransitionType.SCALE) } },
+            { Screen2_3_Greeting{ transitionState.goTo(0, TransitionType.SCALE) } }
         )
     )
 }
