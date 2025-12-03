@@ -23,6 +23,11 @@ ARCore를 사용하여 이미지를 인식하고 3D 모델을 표시하는 Andro
 
 ## ARCore 이미지 데이터베이스 생성 방법
 
+```
+# 해당 링크에서 arcore-android-sdk-1.51.0.zip 파일 다운로드 후 압축 해제
+https://github.com/google-ar/arcore-android-sdk/releases
+```
+
 ```powershell
 # PowerShell에서 실행
 .\build_ar_database.ps1
