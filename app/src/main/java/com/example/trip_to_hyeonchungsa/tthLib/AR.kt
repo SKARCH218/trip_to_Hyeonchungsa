@@ -47,7 +47,7 @@ import com.example.trip_to_hyeonchungsa.tthLib.rendering.BackgroundRenderer
 fun AugmentedImageArView(
     imageName: String,
     modelPath: String,
-    scale: Float,
+    scale: Float = 1.0f,
     modifier: Modifier = Modifier,
     onModelClick: ((String) -> Unit)? = null,
     showDebugInfo: Boolean = false,
