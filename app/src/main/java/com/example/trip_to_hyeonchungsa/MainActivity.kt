@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 시작대화
 @Composable
 fun Screen1_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "talk") {
@@ -35,7 +35,7 @@ fun Screen1_1_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 시작대화
 @Composable
 fun Screen1_2_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "talk") {
@@ -47,7 +47,7 @@ fun Screen1_2_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 시작대화
 @Composable
 fun Screen1_3_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "talk") {
@@ -59,7 +59,7 @@ fun Screen1_3_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 시작대화
 @Composable
 fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "talk") {
@@ -71,7 +71,7 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 기념관 가기 위한 나침반
 @Composable
 fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
     SetBackground(imageName = "navi") {
@@ -79,7 +79,7 @@ fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true)  // 기념관 앞 미션 제공
 @Composable
 fun Screen2_2_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "give") {
@@ -91,7 +91,7 @@ fun Screen2_2_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 현판 힌트
 @Composable
 fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "give") {
@@ -103,7 +103,7 @@ fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 현판 찾고 잔 찾기
 @Composable
 fun Screen3_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "pan") {
@@ -115,7 +115,7 @@ fun Screen3_1_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 잔 찾고 설명
 @Composable
 fun Screen3_2_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "cup") {
@@ -127,7 +127,7 @@ fun Screen3_2_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true) // 임진일기 찾기
 @Composable
 fun Screen3_3_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "cup") {
@@ -142,6 +142,82 @@ fun Screen3_3_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
+@Preview(showBackground = true) // 임진일기 힌트
+@Composable
+fun Screen3_4_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "history_book") {
+        Bubble(
+            name = "누이",
+            content = """
+                암호를 해독하면 임진일기를 얻을 수 있어!
+                암호는 ■■ 해전 과 ■■ 해전 당시 함대의 기동과 전투 경위등이 기술되어 있다
+                빈칸이 뭔지 생각해봐
+                    """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true) // 임진일기 획득 조총 찾기
+@Composable
+fun Screen3_5_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "history_book") {
+        Bubble(
+            name = "오누이",
+            content = """ 맞아 정답은 명량, 노량이야
+ 임진일기에는 그 밖의 공문이나 편지도 수록되어 있어.
+ 자, 그럼 왜군(일본군)이 사용한 조총을 찾아보자
+                   """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true) // 조총 설명 하고 거북선 그림 찾기
+@Composable
+fun Screen3_6_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "gun") {
+        Bubble(
+            name = "오라비",
+            content = """ 조총은 총배에 화약과 탄을 넣고 화승(느리게 타는 끈)에 불을 붙여 방아쇠를 당겨 발화시키는 방식인 총이야 
+이제 거북선(그림)을 찾으러 가자!
+거북선(그림),(모형) 찾으면 과거로 갈 수 있어!
+                   """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
+
+
+@Preview(showBackground = true) // 거북선 그림 설명
+@Composable
+fun Screen3_7_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "turtle") {
+        Bubble(
+            name = "누이",
+            content = """
+거북선은 조선 시대 임진왜란(1592~ 1598) 때 사용한 전투용 군함이야
+
+                   """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true) // 아이템 다 찾고 이제 정려 가야됨
+@Composable
+fun Screen3_8_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "give") {
+        Bubble(
+            name = "오누이",
+            content = """
+ 드디어 다 찾았어! 이제 정려로 가기 위해서 준비는 다 했어
+
+                   """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
 
 @Composable
 fun Main() {
@@ -163,6 +239,12 @@ fun Main() {
             { Screen3_1_Greeting{ transitionState.goTo(8, TransitionType.SCALE) } },
             { Screen3_2_Greeting{ transitionState.goTo(9, TransitionType.SCALE) } },
             { Screen3_3_Greeting{ transitionState.goTo(10, TransitionType.SCALE) } },
+            { Screen3_4_Greeting{ transitionState.goTo(11, TransitionType.SCALE) } },
+            { Screen3_5_Greeting{ transitionState.goTo(12, TransitionType.SCALE) } },
+            { Screen3_5_Greeting{ transitionState.goTo(13, TransitionType.SCALE) } },
+            { Screen3_6_Greeting{ transitionState.goTo(14, TransitionType.SCALE) } },
+            { Screen3_7_Greeting{ transitionState.goTo(15, TransitionType.SCALE) } },
+            { Screen3_8_Greeting{ transitionState.goTo(16, TransitionType.SCALE) } },
 
         )
     )
