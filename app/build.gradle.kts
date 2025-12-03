@@ -63,6 +63,12 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
+    implementation(libs.ar.core) // 추가
+    implementation(libs.javagl.obj) // 추가
+
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -73,10 +79,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.ui.text)
-
-    implementation(libs.ar.core) // 추가
-    implementation(libs.javagl.obj) // 추가
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
