@@ -159,26 +159,6 @@ Button(onClick = { resumeImageTracking() }) {
 
 ---
 
-### 제어 함수 조합 예시
-
-```kotlin
-// 모델 제거 + 인식 중단
-Button(onClick = { 
-    clearAllModels()
-    pauseImageTracking()
-}) {
-    Text("모두 초기화")
-}
-
-// AR 완전 종료 후 다른 화면으로 이동
-Button(onClick = {
-    stopARSession()
-    navController.navigate("homeScreen")
-}) {
-    Text("AR 종료하고 돌아가기")
-}
-```
-
 ## 🔧 자동화 도구
 
 ### build_ar_database.ps1
