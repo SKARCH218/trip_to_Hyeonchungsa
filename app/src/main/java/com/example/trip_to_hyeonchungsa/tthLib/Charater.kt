@@ -2,6 +2,7 @@ package com.example.trip_to_hyeonchungsa
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -20,8 +21,8 @@ import androidx.compose.ui.unit.dp
 
 /**
  * 캐릭터를 화면에 표시하는 함수
- * @param horizontalPosition 가로 위치 (1~10: 1이 가장 왼쪽, 10이 가장 오른쪽)
- * @param verticalPosition 세로 위치 (1~10: 1이 가장 위, 10이 가장 아래)
+ * @param horizontalPosition 가로 위치 (0~100: 0이 가장 왼쪽, 50이 중앙, 100이 가장 오른쪽)
+ * @param verticalPosition 세로 위치 (0~100: 0이 가장 위, 50이 중앙, 100이 가장 아래)
  * @param size 이미지 크기 (기본값: 200)
  * @param brightness 명도 (0~200: 0은 완전 어둡게, 100은 보통, 200은 매우 밝게, 기본값: 100)
  * @param imageName 이미지 파일 이름 (예: "character")
@@ -42,52 +43,34 @@ fun Character(
         context.packageName
     )
     
-    // 가로 위치를 -0.9 ~ 0.9 범위로 변환
-    val horizontalBias = when (horizontalPosition) {
-        1 -> -0.9f
-        2 -> -0.7f
-        3 -> -0.5f
-        4 -> -0.3f
-        5 -> -0.1f
-        6 -> 0.1f
-        7 -> 0.3f
-        8 -> 0.5f
-        9 -> 0.7f
-        10 -> 0.9f
-        else -> 0f
-    }
-    
-    // 세로 위치를 -0.9 ~ 0.9 범위로 변환
-    val verticalBias = when (verticalPosition) {
-        1 -> -0.9f
-        2 -> -0.7f
-        3 -> -0.5f
-        4 -> -0.3f
-        5 -> -0.1f
-        6 -> 0.1f
-        7 -> 0.3f
-        8 -> 0.5f
-        9 -> 0.7f
-        10 -> 0.9f
-        else -> 0f
-    }
-    
     // 명도를 ColorMatrix로 변환 (0~200 범위를 0.0~2.0으로 변환)
     val brightnessValue = brightness.coerceIn(0, 200) / 100f
     val colorMatrix = ColorMatrix().apply {
         setToScale(brightnessValue, brightnessValue, brightnessValue, 1f)
     }
     
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = BiasAlignment(horizontalBias, verticalBias)
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
     ) {
         if (imageResId != 0) {
+            // 화면 크기 계산
+            val screenWidth = maxWidth
+            val screenHeight = maxHeight
+            
+            // 위치 계산 (0~100을 0~1 범위로 변환)
+            val horizontalFraction = horizontalPosition.coerceIn(0, 100) / 100f
+            val verticalFraction = verticalPosition.coerceIn(0, 100) / 100f
+            
+            // 이미지 중심점을 기준으로 배치
+            val xOffset = screenWidth * horizontalFraction - (size.dp / 2)
+            val yOffset = screenHeight * verticalFraction - (size.dp / 2)
+            
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = "Character",
                 modifier = Modifier
-                    .size(size.dp),
+                    .size(size.dp)
+                    .offset(x = xOffset, y = yOffset),
                 contentScale = ContentScale.Fit,
                 colorFilter = ColorFilter.colorMatrix(colorMatrix)
             )
