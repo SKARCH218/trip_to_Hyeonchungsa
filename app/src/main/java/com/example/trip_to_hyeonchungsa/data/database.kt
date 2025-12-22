@@ -18,6 +18,14 @@ data class OwnedItem(
     val itemId: Int
 )
 
+// Entity: 'money' 테이블의 구조를 정의합니다.
+@Entity(tableName = "money")
+data class Money(
+    @PrimaryKey
+    val id: Int = 1, // 항상 1개의 레코드만 사용
+    val amount: Int = 0
+)
+
 // DAO: 데이터베이스와 상호작용하는 함수들(메서드)을 정의합니다.
 @Dao
 interface InventoryDao {
@@ -38,11 +46,24 @@ interface InventoryDao {
     suspend fun clearInventory()
 }
 
+// DAO: 돈 관리를 위한 함수들을 정의합니다.
+@Dao
+interface MoneyDao {
+    // 현재 돈 정보 가져오기
+    @Query("SELECT * FROM money WHERE id = 1")
+    suspend fun getMoney(): Money?
+
+    // 돈 정보 저장/업데이트
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveMoney(money: Money)
+}
+
 // Database: Room 데이터베이스의 메인 클래스입니다.
-@Database(entities = [OwnedItem::class], version = 1, exportSchema = false)
+@Database(entities = [OwnedItem::class, Money::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun inventoryDao(): InventoryDao
+    abstract fun moneyDao(): MoneyDao
 
     companion object {
         @Volatile
