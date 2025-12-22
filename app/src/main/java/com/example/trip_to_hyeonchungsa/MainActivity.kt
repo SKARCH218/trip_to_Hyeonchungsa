@@ -456,7 +456,7 @@ fun Screen7_9_Greeting(onNext: () -> Unit = {}) {
 @Composable
 fun Screen8_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "hal") {
-        Bubble(
+         Bubble(
             name = "할아버지",
             content = "자네 왜? 여기에 왔는가?",
             onClick = onNext
@@ -645,24 +645,36 @@ fun Main() {
             { Screen4_3_Greeting{ transitionState.goTo(19, TransitionType.SCALE) } },
             { Screen4_4_Greeting{ transitionState.goTo(20, TransitionType.SCALE) } },
             //{ Screen5_1_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
-            { Screen5_2_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
-            { Screen5_3_Greeting{ transitionState.goTo(22, TransitionType.SCALE) } },
-            { Screen6_1_Greeting{ transitionState.goTo(23, TransitionType.SCALE) } },
-            { Screen6_2_Greeting{ transitionState.goTo(24, TransitionType.SCALE) } },
-            { Screen6_3_Greeting{ transitionState.goTo(25, TransitionType.SCALE) } },
+            { Screen5_2_Greeting{ transitionState.goTo(22, TransitionType.SCALE) } },
+            { Screen5_3_Greeting{ transitionState.goTo(23, TransitionType.SCALE) } },
+            { Screen6_1_Greeting{ transitionState.goTo(24, TransitionType.SCALE) } },
+            { Screen6_2_Greeting{ transitionState.goTo(25, TransitionType.SCALE) } },
+            { Screen6_3_Greeting{ transitionState.goTo(26, TransitionType.SCALE) } },
 
             //정려이동 퀘스트
-            { Screen7_1_Greeting{ transitionState.goTo(26, TransitionType.SCALE) } },
-            { Screen7_2_Greeting{ transitionState.goTo(27, TransitionType.SCALE) } },
-            { Screen7_3_Greeting{ transitionState.goTo(28, TransitionType.SCALE) } },
-            { Screen7_4_Greeting{ transitionState.goTo(29, TransitionType.SCALE) } },
-            { Screen7_5_Greeting{ transitionState.goTo(30, TransitionType.SCALE) } },
-            { Screen7_6_Greeting{ transitionState.goTo(31, TransitionType.SCALE) } },
-            { Screen7_7_Greeting{ transitionState.goTo(32, TransitionType.SCALE) } },
-            { Screen7_8_Greeting{ transitionState.goTo(33, TransitionType.SCALE) } },
-            { Screen7_9_Greeting{ transitionState.goTo(34, TransitionType.SCALE) } },
+            { Screen7_1_Greeting{ transitionState.goTo(27, TransitionType.SCALE) } },
+            { Screen7_2_Greeting{ transitionState.goTo(28, TransitionType.SCALE) } },
+            { Screen7_3_Greeting{ transitionState.goTo(29, TransitionType.SCALE) } },
+            { Screen7_4_Greeting{ transitionState.goTo(30, TransitionType.SCALE) } },
+            { Screen7_5_Greeting{ transitionState.goTo(31, TransitionType.SCALE) } },
+            { Screen7_6_Greeting{ transitionState.goTo(32, TransitionType.SCALE) } },
+            { Screen7_7_Greeting{ transitionState.goTo(33, TransitionType.SCALE) } },
+            { Screen7_8_Greeting{ transitionState.goTo(34, TransitionType.SCALE) } },
+            { Screen7_9_Greeting{ transitionState.goTo(35, TransitionType.SCALE) } },
+
+            //할아버지와의 대화
+            { Screen8_1_Greeting{ transitionState.goTo(36, TransitionType.SCALE) } },
+            { Screen8_2_Greeting{ transitionState.goTo(37, TransitionType.SCALE) } },
+            { Screen8_3_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
+            { Screen8_4_Greeting{ transitionState.goTo(39, TransitionType.SCALE) } },
+            { Screen8_5_Greeting{ transitionState.goTo(40, TransitionType.SCALE) } },
+            { Screen8_6_Greeting{ transitionState.goTo(41, TransitionType.SCALE) } },
+            { Screen8_7_Greeting{ transitionState.goTo(42, TransitionType.SCALE) } },
+            { Screen8_8_Greeting{ transitionState.goTo(43, TransitionType.SCALE) } },
+            { Screen8_9_Greeting{ transitionState.goTo(44, TransitionType.SCALE) } },
 
             //이순신 고택 퀘스트
+            //이순신 고택 퀘스트 이거 추가해줘 :]
 
 
 
