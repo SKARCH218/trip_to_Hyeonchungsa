@@ -219,6 +219,126 @@ fun Screen3_8_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun Screen4_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "오누이",
+            content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen4_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "누이",
+            content = "같이 과거로 가서 현충사를 구해보지 않을래?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen4_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "누이",
+            content = "현충사를 구하기 위해선 기념관을 가서 유물들을 찾아야해!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen4_4_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "talk") {
+        Bubble(
+            name = "오라비",
+            content = "내가 나침반을 줄게 같이 기념관을 찾아보자.",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen5_1_Greeting(/*onNext: () -> Unit = {}*/) {
+    SetBackground(imageName = "navi") {
+        //Compass(37.5665, 126.9780)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen5_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "give") {
+        Bubble(
+            name = "오라비",
+            content = "기념관 안에 현충사 현판이 있어 찾아줄래?.",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen5_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "give") {
+        Bubble(
+            name = "누이",
+            content = "현판은 입구 근처에 있어 찾아봐!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen6_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "pan") {
+        Bubble(
+            name = "누이",
+            content = "오! 찾았구나 이 현판은 이 현판은 숙종 임금이 직접 쓴 것으로 구현충사에 걸려 있던거야 그럼 복숭아 모양처럼 생긴 잔 을 찾아볼까? 이 근처에 있어!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen6_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "cup") {
+        Bubble(
+            name = "오라비",
+            content = "잘 찾았어 이 복숭아 모양 술잔은 난중일기의 ‘화주배 한 쌍’으로 추정되는 얇은 금도금 술잔으로",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen6_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "cup") {
+        Bubble(
+            name = "오라비",
+            content = """
+                지금은 손잡이 조각의 깊은 홈에서만 금 흔적이 남아 있어
+                그럼 다음 임진일기를 찾아보자 근처에 있으니 찾아보자! 
+                    """.trimIndent(),
+            onClick = onNext
+        )
+    }
+}
+
+
 @Composable
 fun Main() {
     // 화면 전환 상태 관리
@@ -245,6 +365,17 @@ fun Main() {
             { Screen3_6_Greeting{ transitionState.goTo(14, TransitionType.SCALE) } },
             { Screen3_7_Greeting{ transitionState.goTo(15, TransitionType.SCALE) } },
             { Screen3_8_Greeting{ transitionState.goTo(16, TransitionType.SCALE) } },
+            { Screen4_1_Greeting{ transitionState.goTo(17, TransitionType.SCALE) } },
+            { Screen4_2_Greeting{ transitionState.goTo(18, TransitionType.SCALE) } },
+            { Screen4_3_Greeting{ transitionState.goTo(19, TransitionType.SCALE) } },
+            { Screen4_4_Greeting{ transitionState.goTo(20, TransitionType.SCALE) } },
+            //{ Screen5_1_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
+            { Screen5_2_Greeting{ transitionState.goTo(22, TransitionType.SCALE) } },
+            { Screen5_3_Greeting{ transitionState.goTo(23, TransitionType.SCALE) } },
+            { Screen6_1_Greeting{ transitionState.goTo(24, TransitionType.SCALE) } },
+            { Screen6_2_Greeting{ transitionState.goTo(25, TransitionType.SCALE) } },
+            { Screen6_3_Greeting{ transitionState.goTo(26, TransitionType.SCALE) } },
+
 
         )
     )
