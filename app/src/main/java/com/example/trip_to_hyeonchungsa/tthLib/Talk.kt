@@ -1,5 +1,6 @@
 package com.example.trip_to_hyeonchungsa.tthLib
 
+import android.graphics.Typeface
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,12 +17,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,8 +36,23 @@ import androidx.compose.ui.unit.sp
 fun Bubble(
     name: String,
     content: String,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    font: String = ""
 ) {
+    val context = LocalContext.current
+    val fontFamily = remember(font) {
+        if (font.isNotEmpty()) {
+            try {
+                val typeface = Typeface.createFromAsset(context.assets, "font/$font.ttf")
+                FontFamily(typeface)
+            } catch (_: Exception) {
+                FontFamily.Default
+            }
+        } else {
+            FontFamily.Default
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -42,7 +61,6 @@ fun Bubble(
                 .align(Alignment.BottomCenter)
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-            // 여기가 오류가 났던 부분입니다. 함수 이름을 통일했습니다.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,6 +104,7 @@ fun Bubble(
                                 text = name,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = fontFamily,
                                 color = Color.Black,
                                 modifier = Modifier.padding(horizontal = 35.dp, vertical = 8.dp)
                             )
@@ -112,6 +131,7 @@ fun Bubble(
                                 fontSize = 18.sp,
                                 color = Color.Black,
                                 fontWeight = FontWeight.Medium,
+                                fontFamily = fontFamily,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 26.sp
                             )
