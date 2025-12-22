@@ -1,4 +1,4 @@
-package com.example.choice
+package com.example.trip_to_hyeonchungsa.tthLib
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
