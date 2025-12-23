@@ -55,32 +55,35 @@
 
 버튼을 클릭했을 때 진동을 울리는 예시입니다.
 
-**예시 코드:**
+**예시 코드 (Compose에서):**
 
 ```kotlin
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun MyScreen(activity: MainActivity) {
+fun MyScreen() {
+    val context = LocalContext.current
+    
     Column {
         // 약한 진동 버튼
         Button(onClick = {
-            activity.Vibration(3)
+            context.Vibration(3)
         }) {
             Text("약한 진동")
         }
         
         // 중간 진동 버튼
         Button(onClick = {
-            activity.Vibration(5)
+            context.Vibration(5)
         }) {
             Text("중간 진동")
         }
         
         // 강한 진동 버튼
         Button(onClick = {
-            activity.Vibration(10)
+            context.Vibration(10)
         }) {
             Text("강한 진동")
         }
@@ -90,7 +93,7 @@ fun MyScreen(activity: MainActivity) {
 
 ### 3단계: MainActivity에서 직접 사용하기
 
-`MainActivity` 내부에서 함수를 호출하는 경우, `this.Vibration()` 또는 그냥 `Vibration()`으로 사용할 수 있습니다.
+`MainActivity`는 Context를 상속받으므로, 내부에서 바로 `Vibration()`을 호출할 수 있습니다.
 
 **예시 코드:**
 
@@ -99,13 +102,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        // Activity에서 직접 호출 가능
+        Vibration(5)
+        
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
                         Button(onClick = {
-                            // 진동 실행
-                            Vibration(7)
+                            // Activity의 this를 사용
+                            this@MainActivity.Vibration(7)
                         }) {
                             Text("진동 테스트")
                         }
@@ -121,35 +128,37 @@ class MainActivity : ComponentActivity() {
 
 #### 알림이 왔을 때
 ```kotlin
-// 메시지가 도착했을 때 짧은 진동
-fun onMessageReceived() {
+// Activity나 Context가 있는 곳에서
+fun Context.onMessageReceived() {
     Vibration(2)  // 짧고 약한 진동
 }
 ```
 
 #### 에러가 발생했을 때
 ```kotlin
-// 에러 발생 시 강한 진동으로 경고
-fun onError() {
+// Activity나 Context가 있는 곳에서
+fun Context.onError() {
     Vibration(10)  // 강한 진동으로 주의를 끕니다
 }
 ```
 
 #### 게임에서 충돌했을 때
 ```kotlin
-// 게임 캐릭터가 부딪혔을 때
-fun onCollision(collisionStrength: Int) {
+// Activity나 Context가 있는 곳에서
+fun Context.onCollision(collisionStrength: Int) {
     Vibration(collisionStrength)  // 충돌 강도에 따라 진동
 }
 ```
 
-#### 터치 피드백
+#### 터치 피드백 (Compose)
 ```kotlin
+val context = LocalContext.current
+
 // 화면을 터치했을 때 가벼운 진동
 Box(
     modifier = Modifier
         .clickable {
-            Vibration(1)  // 아주 약한 진동
+            context.Vibration(1)  // 아주 약한 진동
             // 다른 동작...
         }
 ) {
@@ -209,10 +218,12 @@ Box(
 **A:** 강도를 8~10으로 높여보세요: `Vibration(10)`
 
 ### Q: 연속으로 진동을 울리고 싶어요!
-**A:** 반복문이나 지연을 사용하면 됩니다:
-```kotlin
+val context = LocalContext.current
+
 Button(onClick = {
     // 3번 연속 진동
+    repeat(3) {
+        context.번 연속 진동
     repeat(3) {
         Vibration(5)
         Thread.sleep(500)  // 0.5초 대기
