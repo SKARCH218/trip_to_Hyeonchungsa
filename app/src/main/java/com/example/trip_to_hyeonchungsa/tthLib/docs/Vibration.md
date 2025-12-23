@@ -45,6 +45,10 @@
 
 `Vibration` 함수는 핸드폰의 진동 모터를 작동시키는 함수입니다.
 
+**두 가지 버전:**
+1. **`Vibration(intensity)`**: Composable 함수 내에서 바로 호출 가능
+2. **`vibrate(intensity)`**: Context 확장 함수, Activity나 일반 함수에서 사용
+
 **파라미터:**
 -   `intensity` (강도): 1부터 10까지의 정수
     -   **1**: 가장 약한 진동 (100ms, 약한 세기)
@@ -218,18 +222,28 @@ Box(
 **A:** 강도를 8~10으로 높여보세요: `Vibration(10)`
 
 ### Q: 연속으로 진동을 울리고 싶어요!
-val context = LocalContext.current
+**A:** 코루틴을 사용하여 연속 진동을 구현할 수 있습니다:
 
-Button(onClick = {
-    // 3번 연속 진동
-    repeat(3) {
-        context.번 연속 진동
-    repeat(3) {
-        Vibration(5)
-        Thread.sleep(500)  // 0.5초 대기
+```kotlin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+
+@Composable
+fun MyScreen() {
+    val scope = rememberCoroutineScope()
+    
+    Button(onClick = {
+        scope.launch {
+            // 3번 연속 진동
+            repeat(3) {
+                Vibration(5)
+                delay(500)  // 0.5초 대기
+            }
+        }
+    }) {
+        Text("연속 진동")
     }
-}) {
-    Text("연속 진동")
 }
 ```
 

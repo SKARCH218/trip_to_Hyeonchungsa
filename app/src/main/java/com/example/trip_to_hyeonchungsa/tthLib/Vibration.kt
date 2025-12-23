@@ -5,12 +5,24 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 
 /**
- * 진동을 발생시키는 함수
+ * Composable에서 바로 사용 가능한 진동 함수
  * @param intensity 진동 강도 (1~10)
  */
-fun Context.Vibration(intensity: Int) {
+@Composable
+fun Vibration(intensity: Int) {
+    val context = LocalContext.current
+    context.vibrate(intensity)
+}
+
+/**
+ * Context 확장 함수로 진동을 발생시키는 함수
+ * @param intensity 진동 강도 (1~10)
+ */
+fun Context.vibrate(intensity: Int) {
     // 진동 강도를 1~10 범위로 제한
     val validIntensity = intensity.coerceIn(1, 10)
     
