@@ -74,7 +74,7 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true) // 기념관 가기 위한 나침반
 @Composable
-fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
+fun Screen2_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "navi") {
         //Compass(37.5665, 126.9780)
     }
@@ -272,7 +272,7 @@ fun Screen4_4_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen5_1_Greeting(/*onNext: () -> Unit = {}*/) {
+fun Screen5_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "navi") {
         //Compass(37.5665, 126.9780)
     }
@@ -560,15 +560,14 @@ fun Screen8_9_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-// 고택 가기 전에 미션하고 성금 모으기
-
+//이순신 고택 퀘스트
 @Preview(showBackground = true)
 @Composable
 fun Screen9_1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "road_1") {
+    SetBackground(imageName = "img_example") {
         Bubble(
-            name = "플레이어",
-            content = "현충사를 구하기 위해서 돈이 필요한데 조금이라도 주실 수 있나요?",
+            name = "이순신",
+            content = "이곳까지 오는데 정말 수고했네..",
             onClick = onNext
         )
     }
@@ -577,12 +576,11 @@ fun Screen9_1_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun Screen9_2_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "road_1") {
+    SetBackground(imageName = "img_example") {
         Bubble(
-            name = "윤정선",
-            content = "착한 아이구나! 대신 그냥 줄 수는 없고 나무를 좀 해와줄 수 있나?",
+            name = "이순신",
+            content = "전쟁중 이 몹쓸 아비때문에 목숨을 잃은 내 아들 이면에게 편지를 전해줬으면 하네..",
             onClick = onNext
-            // 초이스 함수 넣어야됨
         )
     }
 }
@@ -590,10 +588,10 @@ fun Screen9_2_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun Screen9_3_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "road_1") {
+    SetBackground(imageName = "img_example") {
         Bubble(
-            name = "플레이어",
-            content = "여기 나무에요!",
+            name = "이순신",
+            content = "보다시피 내 몸이 이런지라 직접 전할수도 편지를 쓸수도 없다네.. 그러니 대신 편지를 써줬으면 하네..",
             onClick = onNext
         )
     }
@@ -602,10 +600,10 @@ fun Screen9_3_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun Screen9_4_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "road_1") {
+    SetBackground(imageName = "img_example") {
         Bubble(
-            name = "윤정선",
-            content = "고맙구나 이 돈으로 꼭 현충사를 지키거라..!",
+            name = "플레이어",
+            content = "네 꼭 가져다 드리겠습니다.",
             onClick = onNext
         )
     }
@@ -624,11 +622,11 @@ fun Main() {
         state = transitionState,
         durationMillis = 500,
         screens = listOf(
-            { Screen1_1_Greeting { transitionState.goTo(1, TransitionType.FADE) } },
-            { Screen1_2_Greeting { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
-            { Screen1_3_Greeting { transitionState.goTo(3, TransitionType.SCALE) } },
-            {Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
-            //{ Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
+            { Screen1_1_Greeting{ transitionState.goTo(1, TransitionType.FADE) } },
+            { Screen1_2_Greeting{ transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
+            { Screen1_3_Greeting{ transitionState.goTo(3, TransitionType.SCALE) } },
+            { Screen1_4_Greeting{ transitionState.goTo(4, TransitionType.SCALE) } },
+            { Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
             { Screen2_2_Greeting{ transitionState.goTo(6, TransitionType.SCALE) } },
             { Screen2_3_Greeting{ transitionState.goTo(7, TransitionType.SCALE) } },
             { Screen3_1_Greeting{ transitionState.goTo(8, TransitionType.SCALE) } },
@@ -646,7 +644,7 @@ fun Main() {
             { Screen4_2_Greeting{ transitionState.goTo(18, TransitionType.SCALE) } },
             { Screen4_3_Greeting{ transitionState.goTo(19, TransitionType.SCALE) } },
             { Screen4_4_Greeting{ transitionState.goTo(20, TransitionType.SCALE) } },
-            //{ Screen5_1_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
+            { Screen5_1_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
             { Screen5_2_Greeting{ transitionState.goTo(22, TransitionType.SCALE) } },
             { Screen5_3_Greeting{ transitionState.goTo(23, TransitionType.SCALE) } },
             { Screen6_1_Greeting{ transitionState.goTo(24, TransitionType.SCALE) } },
@@ -674,11 +672,10 @@ fun Main() {
             { Screen8_7_Greeting{ transitionState.goTo(42, TransitionType.SCALE) } },
             { Screen8_8_Greeting{ transitionState.goTo(43, TransitionType.SCALE) } },
             { Screen8_9_Greeting{ transitionState.goTo(44, TransitionType.SCALE) } },
-            // 윤정선에게 돈 뜯기
-            { Screen9_1_Greeting{ transitionState.goTo(45, TransitionType.SCALE) } },
-            { Screen9_2_Greeting{ transitionState.goTo(46, TransitionType.SCALE) } },
-            { Screen9_3_Greeting{ transitionState.goTo(47, TransitionType.SCALE) } },
-            { Screen9_4_Greeting{ transitionState.goTo(48, TransitionType.SCALE) } },
+
+            //이순신 고택 퀘스트
+            //이순신 고택 퀘스트 이거 추가해줘 :]
+
 
 
         )
