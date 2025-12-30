@@ -1,20 +1,15 @@
-package com.example.trip_to_hyeonchungsa
+package com.example.trip_to_hyeonchungsa.tthLib
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -49,28 +44,37 @@ fun Character(
         setToScale(brightnessValue, brightnessValue, brightnessValue, 1f)
     }
     
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if (imageResId != 0) {
-            // 화면 크기 계산
-            val screenWidth = maxWidth
-            val screenHeight = maxHeight
-            
-            // 위치 계산 (0~100을 0~1 범위로 변환)
-            val horizontalFraction = horizontalPosition.coerceIn(0, 100) / 100f
-            val verticalFraction = verticalPosition.coerceIn(0, 100) / 100f
-            
-            // 이미지 중심점을 기준으로 배치
-            val xOffset = screenWidth * horizontalFraction - (size.dp / 2)
-            val yOffset = screenHeight * verticalFraction - (size.dp / 2)
-            
+    if (imageResId != 0) {
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // 화면 크기 (픽셀로 변환)
+            val screenWidthPx = constraints.maxWidth
+            val screenHeightPx = constraints.maxHeight
+
+            // 이미지 크기
+            val imageSizeDp = size.dp
+
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = "Character",
                 modifier = Modifier
-                    .size(size.dp)
-                    .offset(x = xOffset, y = yOffset),
+                    .size(imageSizeDp)
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+
+                        // 위치 계산 (픽셀 단위로 정확하게 계산)
+                        val targetX = (screenWidthPx * horizontalPosition.coerceIn(0, 100) / 100f).toInt()
+                        val targetY = (screenHeightPx * verticalPosition.coerceIn(0, 100) / 100f).toInt()
+
+                        // 이미지 중심을 목표 위치에 배치
+                        val x = targetX - (placeable.width / 2)
+                        val y = targetY - (placeable.height / 2)
+
+                        layout(placeable.width, placeable.height) {
+                            placeable.place(x, y)
+                        }
+                    },
                 contentScale = ContentScale.Fit,
                 colorFilter = ColorFilter.colorMatrix(colorMatrix)
             )
