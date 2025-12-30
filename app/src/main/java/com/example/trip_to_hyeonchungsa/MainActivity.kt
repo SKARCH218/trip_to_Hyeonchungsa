@@ -71,6 +71,7 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
+//기념관 퀘스트
 @Preview(showBackground = true) // 기념관 가기 위한 나침반
 @Composable
 fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
@@ -78,8 +79,6 @@ fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
         //Compass(37.5665, 126.9780)
     }
 }
-
-// 기념관 퀘스트
 
 @Preview(showBackground = true)  // 기념관 앞 미션 제공
 @Composable
@@ -565,6 +564,8 @@ fun Main() {
             { Screen1_2_Greeting { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
             { Screen1_3_Greeting { transitionState.goTo(3, TransitionType.SCALE) } },
             { Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
+
+            //기념관 퀘스트
             //{ Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
             { Screen2_2_Greeting{ transitionState.goTo(6, TransitionType.SCALE) } },
             { Screen2_3_Greeting{ transitionState.goTo(7, TransitionType.SCALE) } },
@@ -577,8 +578,6 @@ fun Main() {
             { Screen3_6_Greeting{ transitionState.goTo(14, TransitionType.SCALE) } },
             { Screen3_7_Greeting{ transitionState.goTo(15, TransitionType.SCALE) } },
             { Screen3_8_Greeting{ transitionState.goTo(16, TransitionType.SCALE) } },
-
-            //기념관 퀘스트
 
             //정려이동 퀘스트
             { Screen7_1_Greeting{ transitionState.goTo(17, TransitionType.SCALE) } },
