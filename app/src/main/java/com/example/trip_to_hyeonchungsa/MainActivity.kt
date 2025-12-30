@@ -79,6 +79,8 @@ fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
     }
 }
 
+// 기념관 퀘스트
+
 @Preview(showBackground = true)  // 기념관 앞 미션 제공
 @Composable
 fun Screen2_2_Greeting(onNext: () -> Unit = {}) {
@@ -214,49 +216,6 @@ fun Screen3_8_Greeting(onNext: () -> Unit = {}) {
  드디어 다 찾았어! 이제 정려로 가기 위해서 준비는 다 했어
 
                    """.trimIndent(),
-            onClick = onNext
-        )
-    }
-}
-
-
-//기념관 퀘스트
-
-
-@Preview(showBackground = true)
-@Composable
-fun Screen6_1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "pan") {
-        Bubble(
-            name = "누이",
-            content = "오! 찾았구나 이 현판은 이 현판은 숙종 임금이 직접 쓴 것으로 구현충사에 걸려 있던거야 그럼 복숭아 모양처럼 생긴 잔 을 찾아볼까? 이 근처에 있어!",
-            onClick = onNext
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Screen6_2_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "cup") {
-        Bubble(
-            name = "오라비",
-            content = "잘 찾았어 이 복숭아 모양 술잔은 난중일기의 ‘화주배 한 쌍’으로 추정되는 얇은 금도금 술잔으로",
-            onClick = onNext
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Screen6_3_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "cup") {
-        Bubble(
-            name = "오라비",
-            content = """
-                지금은 손잡이 조각의 깊은 홈에서만 금 흔적이 남아 있어
-                그럼 다음 임진일기를 찾아보자 근처에 있으니 찾아보자! 
-                    """.trimIndent(),
             onClick = onNext
         )
     }
