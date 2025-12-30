@@ -593,9 +593,6 @@ fun Screen10_6_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-
-
-
 @Composable
 fun Main() {
     // 화면 전환 상태 관리
@@ -609,7 +606,7 @@ fun Main() {
             { Screen1_1_Greeting { transitionState.goTo(1, TransitionType.FADE) } },
             { Screen1_2_Greeting { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
             { Screen1_3_Greeting { transitionState.goTo(3, TransitionType.SCALE) } },
-            {Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
+            { Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
             //{ Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
             { Screen2_2_Greeting{ transitionState.goTo(6, TransitionType.SCALE) } },
             { Screen2_3_Greeting{ transitionState.goTo(7, TransitionType.SCALE) } },
@@ -654,8 +651,6 @@ fun Main() {
             { Screen9_4_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
 
             //
-
-
 
         )
     )
