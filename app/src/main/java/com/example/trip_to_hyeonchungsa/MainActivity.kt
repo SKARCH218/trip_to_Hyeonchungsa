@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.trip_to_hyeonchungsa.tthLib.Bubble
-import com.example.trip_to_hyeonchungsa.tthLib.Compass
 import com.example.trip_to_hyeonchungsa.tthLib.SetBackground
 import com.example.trip_to_hyeonchungsa.tthLib.ScreenTransitionManager
 import com.example.trip_to_hyeonchungsa.tthLib.TransitionType
