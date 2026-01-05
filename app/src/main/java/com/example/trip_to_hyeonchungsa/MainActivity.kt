@@ -593,8 +593,34 @@ fun Screen10_5_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
+//현충사 사진찍기
+@Preview(showBackground = true)
+@Composable
+fun Screen11_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "Yaesi") {
+        SetBackground(imageName = "") { }
+    }
+}
 
+//사진을 찍으면
+@Preview(showBackground = true)
+@Composable
+fun Screen11_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "nachim") {
+        SetBackground(imageName = "") { }
+    }
+}
 
+//나침반 가져감
+@Preview(showBackground = true)
+@Composable
+fun Screen11_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "HYON") {
+        SetBackground(imageName = "") { }
+    }
+}
+
+//그리고 구현충사 가고 구현충사 지식알려주면 됨 :)
 
 @Composable
 fun Main() {
@@ -659,6 +685,10 @@ fun Main() {
             { Screen10_3_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
             { Screen10_4_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
             { Screen10_5_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
+            //현충사
+            { Screen11_1_Greeting{ transitionState.goTo(39, TransitionType.SCALE) } },
+            { Screen11_2_Greeting{ transitionState.goTo(40, TransitionType.SCALE) } },
+            { Screen11_3_Greeting{ transitionState.goTo(41, TransitionType.SCALE) } },
 
 
         )
