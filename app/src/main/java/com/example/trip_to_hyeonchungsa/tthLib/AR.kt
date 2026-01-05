@@ -27,6 +27,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.google.ar.core.*
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import java.io.IOException
+import kotlinx.coroutines.delay
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import com.example.trip_to_hyeonchungsa.tthLib.rendering.DisplayRotationHelper
@@ -382,4 +383,450 @@ fun pauseImageTracking() {
 fun resumeImageTracking() {
     isTrackingEnabled = true
     Log.d("ARFunction", "이미지 인식 재개됨")
+}
+
+
+/**
+ * 특정 이미지를 카메라로 인식하면 true를 반환하는 Composable 함수
+ *
+ * @param imageName 인식할 이미지 이름 (확장자 제외)
+ * @param timeoutMs 타임아웃 시간 (밀리초, 기본 30초)
+ * @return State<Boolean?> - null(검색 중), true(찾음), false(타임아웃)
+ *
+ * 사용 예시:
+ * ```kotlin
+ * @Composable
+ * fun MyScreen() {
+ *     val result = ImageSensing("target_image")
+ *
+ *     when (result.value) {
+ *         true -> Text("이미지를 찾았습니다!")
+ *         false -> Text("이미지를 찾지 못했습니다.")
+ *         null -> Text("검색 중...")
+ *     }
+ * }
+ *
+ * // 변수에 저장하는 형태
+ * val a = ImageSensing("test.jpg")
+ * if (a.value == true) {
+ *     // 인식 성공 처리
+ * }
+ * ```
+ */
+@Composable
+fun ImageSensing(
+    imageName: String,
+    timeoutMs: Long = 30000L
+): State<Boolean?> {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val result = remember { mutableStateOf<Boolean?>(null) }
+    val message = remember { mutableStateOf("'$imageName' 이미지를 찾는 중...") }
+
+    // ARCore 세션과 GLSurfaceView 인스턴스를 remember로 관리
+    val arCoreSession = remember { mutableStateOf<Session?>(null) }
+    val glSurfaceView = remember { GLSurfaceView(context) }
+    val isDetected = remember { mutableStateOf(false) }
+
+    // Rendering objects
+    val displayRotationHelper = remember { DisplayRotationHelper(context) }
+    val backgroundRenderer = remember { BackgroundRenderer() }
+    val cameraTextureId = remember { IntArray(1) }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                message.value = "이미지 인식을 시작합니다..."
+            } else {
+                message.value = "카메라 권한이 필요합니다."
+                result.value = false
+            }
+        }
+    )
+
+    // AR 기능 설정
+    fun setupImageSensingAR() {
+        try {
+            if (arCoreSession.value == null) {
+                val session = when (ArCoreApk.getInstance().requestInstall(context as ComponentActivity, true)) {
+                    ArCoreApk.InstallStatus.INSTALLED -> Session(context)
+                    else -> {
+                        message.value = "ARCore 설치가 필요합니다."
+                        result.value = false
+                        return
+                    }
+                }
+                arCoreSession.value = session
+
+                val config = Config(session)
+                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                if (!setupAugmentedImageDatabase(context, config, session)) {
+                    message.value = "증강 이미지 데이터베이스를 설정할 수 없습니다."
+                    result.value = false
+                    return
+                }
+                session.configure(config)
+            }
+        } catch (e: Exception) {
+            message.value = "AR 설정 중 오류 발생: ${e.message}"
+            result.value = false
+            Log.e("ImageSensing", "Error setting up AR", e)
+        }
+    }
+
+    // Lifecycle 이벤트 관찰
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    if (!isDetected.value && result.value == null) {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            setupImageSensingAR()
+                            glSurfaceView.onResume()
+                            arCoreSession.value?.resume()
+                            displayRotationHelper.onResume()
+                        } else {
+                            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    if (!isDetected.value) {
+                        arCoreSession.value?.pause()
+                        glSurfaceView.onPause()
+                        displayRotationHelper.onPause()
+                    }
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    arCoreSession.value?.close()
+                    arCoreSession.value = null
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            arCoreSession.value?.pause()
+            arCoreSession.value?.close()
+            arCoreSession.value = null
+        }
+    }
+
+    // 타임아웃 처리
+    LaunchedEffect(Unit) {
+        delay(timeoutMs)
+        if (result.value == null) {
+            result.value = false
+            Log.d("ImageSensing", "'$imageName' 타임아웃")
+            arCoreSession.value?.pause()
+            glSurfaceView.onPause()
+            displayRotationHelper.onPause()
+            delay(100)
+            arCoreSession.value?.close()
+            arCoreSession.value = null
+        }
+    }
+
+    // 인식되면 세션 종료
+    LaunchedEffect(isDetected.value) {
+        if (isDetected.value) {
+            result.value = true
+            Log.d("ImageSensing", "'$imageName' 이미지 인식 완료! 세션을 종료합니다.")
+            arCoreSession.value?.pause()
+            glSurfaceView.onPause()
+            displayRotationHelper.onPause()
+            delay(100)
+            arCoreSession.value?.close()
+            arCoreSession.value = null
+        }
+    }
+
+    // 화면 UI (보이지 않는 레이어)
+    if (!isDetected.value && result.value == null) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                factory = {
+                    glSurfaceView.apply {
+                        preserveEGLContextOnPause = true
+                        setEGLContextClientVersion(2)
+                        setEGLConfigChooser(8, 8, 8, 8, 16, 0)
+
+                        setRenderer(object : GLSurfaceView.Renderer {
+                            override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+                                GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f)
+                                GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+                                GLES20.glGenTextures(1, cameraTextureId, 0)
+                                try {
+                                    backgroundRenderer.createOnGlThread(context, cameraTextureId[0])
+                                } catch (e: IOException) {
+                                    Log.e("ImageSensing", "Failed to initialize renderer", e)
+                                }
+                            }
+
+                            var surfaceWidth = 0
+                            var surfaceHeight = 0
+
+                            override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+                                surfaceWidth = width
+                                surfaceHeight = height
+                                displayRotationHelper.onSurfaceChanged(width, height)
+                                GLES20.glViewport(0, 0, width, height)
+                            }
+
+                            override fun onDrawFrame(gl: GL10?) {
+                                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+
+                                val session = arCoreSession.value
+                                if (session == null || isDetected.value || result.value != null) {
+                                    return
+                                }
+                                displayRotationHelper.updateSessionIfNeeded(session)
+
+                                try {
+                                    session.setCameraTextureName(cameraTextureId[0])
+                                    val frame = session.update()
+
+                                    // 이미지 인식 체크
+                                    if (frame.camera.trackingState == TrackingState.TRACKING) {
+                                        val updatedTrackables = frame.getUpdatedTrackables(AugmentedImage::class.java)
+                                        for (image in updatedTrackables) {
+                                            if (image.trackingState == TrackingState.TRACKING &&
+                                                image.name == imageName &&
+                                                image.trackingMethod == AugmentedImage.TrackingMethod.FULL_TRACKING) {
+                                                Log.d("ImageSensing", "'$imageName' 이미지 인식됨!")
+                                                isDetected.value = true
+                                                break
+                                            }
+                                        }
+                                    }
+
+                                    // Draw camera background
+                                    backgroundRenderer.draw(frame)
+
+                                } catch (e: CameraNotAvailableException) {
+                                    Log.e("ImageSensing", "Camera not available", e)
+                                }
+                            }
+                        })
+                        renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = message.value,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
+    }
+
+    return result
+}
+
+/**
+ * ImageSensing을 Composable UI와 함께 사용하는 함수
+ * @param imageName 인식할 이미지 이름 (확장자 제외)
+ * @param onDetected 이미지가 인식되었을 때 호출되는 콜백
+ *
+ * 사용 예시:
+ * ```kotlin
+ * var detected by remember { mutableStateOf(false) }
+ * if (!detected) {
+ *     ImageSensingView(imageName = "target_image") { imageName ->
+ *         detected = true
+ *     }
+ * }
+ * ```
+ */
+@Composable
+fun ImageSensingView(
+    imageName: String,
+    onDetected: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val message = remember { mutableStateOf("'$imageName' 이미지를 찾는 중...") }
+
+    // ARCore 세션과 GLSurfaceView 인스턴스를 remember로 관리
+    val arCoreSession = remember { mutableStateOf<Session?>(null) }
+    val glSurfaceView = remember { GLSurfaceView(context) }
+    val isDetected = remember { mutableStateOf(false) }
+
+
+    // Rendering objects
+    val displayRotationHelper = remember { DisplayRotationHelper(context) }
+    val backgroundRenderer = remember { BackgroundRenderer() }
+    val cameraTextureId = remember { IntArray(1) }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                message.value = "이미지 인식을 시작합니다..."
+            } else {
+                message.value = "카메라 권한이 필요합니다."
+            }
+        }
+    )
+
+    // AR 기능 설정
+    fun setupImageSensingAR() {
+        try {
+            if (arCoreSession.value == null) {
+                val session = when (ArCoreApk.getInstance().requestInstall(context as ComponentActivity, true)) {
+                    ArCoreApk.InstallStatus.INSTALLED -> Session(context)
+                    else -> {
+                        message.value = "ARCore 설치가 필요합니다."
+                        return
+                    }
+                }
+                arCoreSession.value = session
+
+                val config = Config(session)
+                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                if (!setupAugmentedImageDatabase(context, config, session)) {
+                    message.value = "증강 이미지 데이터베이스를 설정할 수 없습니다."
+                    return
+                }
+                session.configure(config)
+            }
+        } catch (e: Exception) {
+            message.value = "AR 설정 중 오류 발생: ${e.message}"
+            Log.e("ImageSensing", "Error setting up AR", e)
+        }
+    }
+
+    // Lifecycle 이벤트 관찰
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    if (!isDetected.value) {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            setupImageSensingAR()
+                            glSurfaceView.onResume()
+                            arCoreSession.value?.resume()
+                            displayRotationHelper.onResume()
+                        } else {
+                            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    if (!isDetected.value) {
+                        arCoreSession.value?.pause()
+                        glSurfaceView.onPause()
+                        displayRotationHelper.onPause()
+                    }
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    arCoreSession.value?.close()
+                    arCoreSession.value = null
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            arCoreSession.value?.pause()
+            arCoreSession.value?.close()
+            arCoreSession.value = null
+        }
+    }
+
+    // 인식되면 세션 종료
+    LaunchedEffect(isDetected.value) {
+        if (isDetected.value) {
+            Log.d("ImageSensing", "'$imageName' 이미지 인식 완료! 세션을 종료합니다.")
+            arCoreSession.value?.pause()
+            glSurfaceView.onPause()
+            displayRotationHelper.onPause()
+            delay(100) // 약간의 딜레이 후 종료
+            arCoreSession.value?.close()
+            arCoreSession.value = null
+        }
+    }
+
+    // 화면 UI
+    if (!isDetected.value) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(
+                factory = {
+                    glSurfaceView.apply {
+                        preserveEGLContextOnPause = true
+                        setEGLContextClientVersion(2)
+                        setEGLConfigChooser(8, 8, 8, 8, 16, 0)
+
+                        setRenderer(object : GLSurfaceView.Renderer {
+                            override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+                                GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f)
+                                GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+                                GLES20.glGenTextures(1, cameraTextureId, 0)
+                                try {
+                                    backgroundRenderer.createOnGlThread(context, cameraTextureId[0])
+                                } catch (e: IOException) {
+                                    Log.e("ImageSensing", "Failed to initialize renderer", e)
+                                }
+                            }
+
+                            var surfaceWidth = 0
+                            var surfaceHeight = 0
+
+                            override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+                                surfaceWidth = width
+                                surfaceHeight = height
+                                displayRotationHelper.onSurfaceChanged(width, height)
+                                GLES20.glViewport(0, 0, width, height)
+                            }
+
+                            override fun onDrawFrame(gl: GL10?) {
+                                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+
+                                val session = arCoreSession.value
+                                if (session == null || isDetected.value) {
+                                    return
+                                }
+                                displayRotationHelper.updateSessionIfNeeded(session)
+
+                                try {
+                                    session.setCameraTextureName(cameraTextureId[0])
+                                    val frame = session.update()
+
+                                    // 이미지 인식 체크
+                                    if (frame.camera.trackingState == TrackingState.TRACKING) {
+                                        val updatedTrackables = frame.getUpdatedTrackables(AugmentedImage::class.java)
+                                        for (image in updatedTrackables) {
+                                            if (image.trackingState == TrackingState.TRACKING &&
+                                                image.name == imageName &&
+                                                image.trackingMethod == AugmentedImage.TrackingMethod.FULL_TRACKING) {
+                                                Log.d("ImageSensing", "'$imageName' 이미지 인식됨!")
+                                                isDetected.value = true
+                                                onDetected(imageName)
+                                                break
+                                            }
+                                        }
+                                    }
+
+                                    // Draw camera background
+                                    backgroundRenderer.draw(frame)
+
+                                } catch (e: CameraNotAvailableException) {
+                                    Log.e("ImageSensing", "Camera not available", e)
+                                }
+                            }
+                        })
+                        renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = message.value,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
+    }
 }

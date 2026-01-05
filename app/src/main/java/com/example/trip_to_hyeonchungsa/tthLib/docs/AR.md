@@ -159,6 +159,21 @@ Button(onClick = { resumeImageTracking() }) {
 
 ---
 
+## 이미지 인식
+
+### 기본 사용법 
+
+`ImageSensing` 함수를 통해 이미지 인식을 할 수 있습니다:
+
+```kotlin
+var test = ImageSensing("이미지 이름")
+```
+
+* `app/src/main/assets/augmented_images/`폴더에 있는 사진을 사용합니다.
+* 이미지가 인식되면 true 값을 반환합니다.
+
+---
+
 ## 🔧 자동화 도구
 
 ### build_ar_database.ps1
