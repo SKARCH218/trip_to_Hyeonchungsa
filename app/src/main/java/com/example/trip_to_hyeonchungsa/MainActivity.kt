@@ -620,7 +620,20 @@ fun Screen11_3_Greeting(onNext: () -> Unit = {}) {
     }
 }
 
-//그리고 구현충사 가고 구현충사 지식알려주면 됨 :)
+//그리고 구현충사 가고 구현충사 지식알려주면 됨 :) 구 현충사 지식?
+//마지막
+@Preview(showBackground = true)
+@Composable
+fun Screen12_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "END") {
+        Bubble(
+            name = "사람들",
+            content = "고마워 네가 우리 현충사를 구했어",
+            onClick = onNext
+        )
+        SetBackground(imageName = "") { }
+    }
+}
 
 @Composable
 fun Main() {
