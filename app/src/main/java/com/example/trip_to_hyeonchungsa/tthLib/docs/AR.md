@@ -54,7 +54,7 @@ setContent {
 ```kotlin
 AugmentedImageArView(
     imageName = "image",
-    modelPath = "models/mofel.obj",
+    modelPath = "models/model.obj",
     scale = 0.1f,
     onModelClick = { 
         // 클릭 시 실행될 코드
@@ -161,7 +161,7 @@ Button(onClick = { resumeImageTracking() }) {
 
 ## 이미지 인식
 
-### 기본 사용법 
+### 기본 사용법
 
 `ImageSensing` 함수를 통해 이미지 인식을 할 수 있습니다:
 
@@ -171,6 +171,22 @@ var test = ImageSensing("이미지 이름")
 
 * `app/src/main/assets/augmented_images/`폴더에 있는 사진을 사용합니다.
 * 이미지가 인식되면 true 값을 반환합니다.
+
+### true 값 감지
+```kotlin
+// 1
+var a = ImageSensing("이미지 이름")
+if (a.value == true) {
+    // 이미지를 찾았을 때 처리
+}
+
+// 2
+if (ImageSensing("이미지 이름").value == true) {
+    // 이미지를 찾았을 때 처리
+}
+```
+
+`변수.value == true`를 통해 감지가 가능합니다.
 
 ---
 
@@ -309,4 +325,4 @@ ar-core = { group = "com.google.ar", name = "core", version.ref = "arcore" }
 javagl-obj = { group = "de.javagl", name = "obj", version.ref = "javagl-obj" }
 ```
 
-**마지막 업데이트**: 2025년 11월 27일
+**마지막 업데이트**: 2026년 1월 6일

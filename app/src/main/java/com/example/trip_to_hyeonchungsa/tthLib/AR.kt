@@ -60,7 +60,9 @@ fun AugmentedImageArView(
 
     // 내부에서 Map으로 변환
     val imageToModelMap = remember(imageName, modelPath, scale) {
-        mapOf(imageName to Pair(modelPath, scale))
+        val map = mapOf(imageName to Pair(modelPath, scale))
+        Log.d("ARFunction", "imageToModelMap 생성: $map")
+        map
     }
 
     // ARCore 세션과 GLSurfaceView 인스턴스를 remember로 관리
@@ -191,10 +193,13 @@ fun AugmentedImageArView(
                             GLES20.glGenTextures(1, cameraTextureId, 0)
                             try {
                                 backgroundRenderer.createOnGlThread(context, cameraTextureId[0])
-                                objectRenderer.createOnGlThread(context, "models/andy.obj")
+                                // modelPath 파라미터 사용 (하드코딩 제거)
+                                objectRenderer.createOnGlThread(context, modelPath)
                                 objectRenderer.setMaterialProperties(0.0f, 3.5f, 1.0f, 6.0f)
+                                Log.d("ARFunction", "모델 로드 성공: $modelPath")
                             } catch (e: IOException) {
-                                Log.e("ARFunction", "Failed to read obj file", e)
+                                Log.e("ARFunction", "Failed to read obj file: $modelPath", e)
+                                message.value = "모델 파일 로드 실패: $modelPath"
                             }
                         }
                         var surfaceWidth = 0
@@ -247,19 +252,30 @@ fun AugmentedImageArView(
                                 camera.getViewMatrix(viewMatrix, 0)
 
                                 // Draw the object for each tracked image
-                                for ((_, pair) in trackedImages) {
+                                Log.d("ARFunction", "렌더링 시도 - trackedImages 크기: ${trackedImages.size}")
+                                for ((index, pair) in trackedImages) {
                                     val (image, anchor) = pair
+                                    Log.d("ARFunction", "이미지 [${index}] ${image.name} - 상태: ${image.trackingState}, 방법: ${image.trackingMethod}")
+
                                     // 추적 중이고 추적 방법이 FULL_TRACKING인 경우에만 렌더링
                                     if (image.trackingState == TrackingState.TRACKING &&
                                         image.trackingMethod == AugmentedImage.TrackingMethod.FULL_TRACKING) {
                                         val modelData = imageToModelMap[image.name]
+                                        Log.d("ARFunction", "모델 데이터 검색: ${image.name} -> $modelData")
+
                                         if (modelData != null) {
                                             val (_, modelScale) = modelData
                                             val modelMatrix = FloatArray(16)
                                             anchor.pose.toMatrix(modelMatrix, 0)
                                             objectRenderer.updateModelMatrix(modelMatrix, modelScale)
                                             objectRenderer.draw(viewMatrix, projectionMatrix, null, floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f))
+                                            Log.d("ARFunction", "✅ 모델 렌더링 완료: ${image.name}, 스케일: $modelScale")
+                                        } else {
+                                            Log.e("ARFunction", "❌ 모델 데이터 없음: ${image.name}")
+                                            Log.e("ARFunction", "❌ imageToModelMap 내용: $imageToModelMap")
                                         }
+                                    } else {
+                                        Log.d("ARFunction", "⚠️ 렌더링 조건 미충족 - 상태: ${image.trackingState}, 방법: ${image.trackingMethod}")
                                     }
                                 }
 
@@ -287,10 +303,14 @@ private fun setupAugmentedImageDatabase(context: Context, config: Config, sessio
         context.assets.open("augmented_images/augmented_image_database.imgdb").use { `is` ->
             val augmentedImageDatabase = AugmentedImageDatabase.deserialize(session, `is`)
             config.augmentedImageDatabase = augmentedImageDatabase
+            Log.d("ARFunction", "✅ 이미지 데이터베이스 로드 성공 - 등록된 이미지 개수: ${augmentedImageDatabase.numImages}")
+            for (i in 0 until augmentedImageDatabase.numImages) {
+                Log.d("ARFunction", "  - 이미지 [$i]: 인덱스 $i")
+            }
             return true
         }
     } catch (e: IOException) {
-        Log.e("ARFunction", "IO exception loading augmented image database.", e)
+        Log.e("ARFunction", "❌ IO exception loading augmented image database.", e)
     }
     return false
 }
@@ -301,12 +321,18 @@ private fun handleFrame(
     trackedImages: MutableMap<Int, Pair<AugmentedImage, Anchor>>,
     message: MutableState<String>
 ) {
-    if (frame.camera.trackingState != TrackingState.TRACKING) return
+    if (frame.camera.trackingState != TrackingState.TRACKING) {
+        Log.d("ARFunction", "카메라 추적 상태 아님: ${frame.camera.trackingState}")
+        return
+    }
 
     val updatedTrackables = frame.getUpdatedTrackables(AugmentedImage::class.java)
+    Log.d("ARFunction", "업데이트된 이미지 개수: ${updatedTrackables.size}")
 
     // 추적 중인 이미지 처리
     for (image in updatedTrackables) {
+        Log.d("ARFunction", "이미지 발견 - 이름: ${image.name}, 상태: ${image.trackingState}, 방법: ${image.trackingMethod}, 인덱스: ${image.index}")
+
         when (image.trackingState) {
             TrackingState.TRACKING -> {
                 if (!trackedImages.containsKey(image.index)) {
@@ -314,24 +340,32 @@ private fun handleFrame(
                     if (isTrackingEnabled) {
                         val anchor = image.createAnchor(image.centerPose)
                         trackedImages[image.index] = image to anchor
-                        message.value = "'${image.name}' 이미지 추적 성공!"
+                        message.value = "'${image.name}' 이미지 추적 성공! (인덱스: ${image.index})"
+                        Log.d("ARFunction", "✅ 새 이미지 추적 시작: ${image.name}, 앵커 생성 완료")
+                    } else {
+                        Log.d("ARFunction", "⚠️ 이미지 인식이 비활성화됨 (isTrackingEnabled = false)")
                     }
                 } else {
                     // 기존 앵커 업데이트
                     trackedImages[image.index] = image to trackedImages[image.index]!!.second
+                    Log.d("ARFunction", "기존 이미지 업데이트: ${image.name}")
                 }
             }
             TrackingState.PAUSED -> {
                 // 추적이 일시 중지되면 제거 (사진이 보이지 않음)
                 trackedImages.remove(image.index)?.second?.detach()
                 message.value = "이미지 추적 중단"
+                Log.d("ARFunction", "이미지 일시중지: ${image.name}")
             }
             TrackingState.STOPPED -> {
                 // 추적이 완전히 중지되면 제거
                 trackedImages.remove(image.index)?.second?.detach()
+                Log.d("ARFunction", "이미지 추적 중지: ${image.name}")
             }
         }
     }
+
+    Log.d("ARFunction", "현재 추적 중인 이미지 개수: ${trackedImages.size}")
 }
 
 // AR 세션 관리를 위한 전역 변수
@@ -389,34 +423,22 @@ fun resumeImageTracking() {
 /**
  * 특정 이미지를 카메라로 인식하면 true를 반환하는 Composable 함수
  *
- * @param imageName 인식할 이미지 이름 (확장자 제외)
- * @param timeoutMs 타임아웃 시간 (밀리초, 기본 30초)
- * @return State<Boolean?> - null(검색 중), true(찾음), false(타임아웃)
+ * @param imageName 인식할 이미지 이름 (확장자 제외, 데이터베이스에 등록된 이름)
+ * @return State<Boolean?> - null(검색 중), true(찾음)
  *
- * 사용 예시:
- * ```kotlin
- * @Composable
- * fun MyScreen() {
- *     val result = ImageSensing("target_image")
+ * **이미지 데이터베이스 위치**: `app/src/main/assets/augmented_images/`
+ * - 이미지는 `augmented_image_database.imgdb`에 등록되어 있어야 합니다.
+ * - 등록된 이미지 목록은 `augmented_image_database.imgdb-imglist.txt`에서 확인할 수 있습니다.
  *
- *     when (result.value) {
- *         true -> Text("이미지를 찾았습니다!")
- *         false -> Text("이미지를 찾지 못했습니다.")
- *         null -> Text("검색 중...")
- *     }
- * }
- *
- * // 변수에 저장하는 형태
- * val a = ImageSensing("test.jpg")
- * if (a.value == true) {
- *     // 인식 성공 처리
- * }
- * ```
+
+ * **주의사항**:
+ * - 이 함수는 카메라를 사용하므로 카메라 권한이 필요합니다.
+ * - 이미지가 인식되면 자동으로 AR 세션이 종료됩니다.
+ * - Compose UI 내에서만 사용할 수 있습니다 (@Composable 함수 내에서 호출).
  */
 @Composable
 fun ImageSensing(
-    imageName: String,
-    timeoutMs: Long = 30000L
+    imageName: String
 ): State<Boolean?> {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -514,20 +536,6 @@ fun ImageSensing(
         }
     }
 
-    // 타임아웃 처리
-    LaunchedEffect(Unit) {
-        delay(timeoutMs)
-        if (result.value == null) {
-            result.value = false
-            Log.d("ImageSensing", "'$imageName' 타임아웃")
-            arCoreSession.value?.pause()
-            glSurfaceView.onPause()
-            displayRotationHelper.onPause()
-            delay(100)
-            arCoreSession.value?.close()
-            arCoreSession.value = null
-        }
-    }
 
     // 인식되면 세션 종료
     LaunchedEffect(isDetected.value) {
@@ -591,15 +599,19 @@ fun ImageSensing(
                                     // 이미지 인식 체크
                                     if (frame.camera.trackingState == TrackingState.TRACKING) {
                                         val updatedTrackables = frame.getUpdatedTrackables(AugmentedImage::class.java)
+                                        Log.d("ImageSensing", "프레임 업데이트 - 발견된 이미지 개수: ${updatedTrackables.size}")
+
                                         for (image in updatedTrackables) {
-                                            if (image.trackingState == TrackingState.TRACKING &&
-                                                image.name == imageName &&
-                                                image.trackingMethod == AugmentedImage.TrackingMethod.FULL_TRACKING) {
-                                                Log.d("ImageSensing", "'$imageName' 이미지 인식됨!")
+                                            Log.d("ImageSensing", "이미지 발견 - 이름: '${image.name}', 찾는 이름: '$imageName', 상태: ${image.trackingState}, 방법: ${image.trackingMethod}")
+
+                                            if (image.trackingState == TrackingState.TRACKING && image.name == imageName) {
+                                                Log.d("ImageSensing", "✅ '$imageName' 이미지 인식됨! (tracking method: ${image.trackingMethod})")
                                                 isDetected.value = true
                                                 break
                                             }
                                         }
+                                    } else {
+                                        Log.d("ImageSensing", "카메라 추적 상태 아님: ${frame.camera.trackingState}")
                                     }
 
                                     // Draw camera background
@@ -607,6 +619,8 @@ fun ImageSensing(
 
                                 } catch (e: CameraNotAvailableException) {
                                     Log.e("ImageSensing", "Camera not available", e)
+                                } catch (e: Exception) {
+                                    Log.e("ImageSensing", "Error in onDrawFrame", e)
                                 }
                             }
                         })
@@ -629,16 +643,6 @@ fun ImageSensing(
  * ImageSensing을 Composable UI와 함께 사용하는 함수
  * @param imageName 인식할 이미지 이름 (확장자 제외)
  * @param onDetected 이미지가 인식되었을 때 호출되는 콜백
- *
- * 사용 예시:
- * ```kotlin
- * var detected by remember { mutableStateOf(false) }
- * if (!detected) {
- *     ImageSensingView(imageName = "target_image") { imageName ->
- *         detected = true
- *     }
- * }
- * ```
  */
 @Composable
 fun ImageSensingView(
