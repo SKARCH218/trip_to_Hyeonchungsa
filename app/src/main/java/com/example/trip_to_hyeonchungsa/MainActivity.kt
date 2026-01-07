@@ -359,11 +359,10 @@ fun Screen7_2_Greeting(onNext: () -> Unit = {}) {
 @Composable
 fun Screen7_3_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "img_example") {
-        Bubble(
-            name = "플레이어",
-            content = "거기엔 왜 가는데?",
-            onClick = onNext
-        )
+        Choice("그래", "거기엔 왜 가는데") { _ ->
+            // 어떤 선택을 해도 다음 화면으로
+            onNext()
+        }
     }
 }
 
@@ -373,7 +372,7 @@ fun Screen7_4_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "img_example") {
         Bubble(
             name = "누이",
-            content = "현충사를 구하려면 모금운동을 해야해",
+            content = "현충사를 구하려면 과거로 가서 모금운동을 해야해",
             onClick = onNext
         )
     }
