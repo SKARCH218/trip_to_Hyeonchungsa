@@ -128,8 +128,9 @@ fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
                 "현충사의 현판을 찾아 스캔하자",
                 "현충사의 현판을 찾아 AR로 스캔하여 인식해 주세요"
             ) {
-                if (ImageSensing("").value == true) {
-                    onNext()
+                onNext()
+                if (ImageSensing("pan").value == true) {
+
                 }
             }
         }
