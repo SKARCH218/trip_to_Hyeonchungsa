@@ -3,18 +3,23 @@ package com.example.trip_to_hyeonchungsa
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.trip_to_hyeonchungsa.data.InventoryDao
 import com.example.trip_to_hyeonchungsa.tthLib.Bubble
 import com.example.trip_to_hyeonchungsa.tthLib.Character
 import com.example.trip_to_hyeonchungsa.tthLib.Choice
 import com.example.trip_to_hyeonchungsa.tthLib.Compass
+import com.example.trip_to_hyeonchungsa.tthLib.EndingCredits
 import com.example.trip_to_hyeonchungsa.tthLib.ImageSensing
 import com.example.trip_to_hyeonchungsa.tthLib.QuestDisplay
 import com.example.trip_to_hyeonchungsa.tthLib.SetBackground
 import com.example.trip_to_hyeonchungsa.tthLib.ScreenTransitionManager
 import com.example.trip_to_hyeonchungsa.tthLib.TransitionType
 import com.example.trip_to_hyeonchungsa.tthLib.rememberScreenTransitionState
+import com.example.trip_to_hyeonchungsa.tthLib.InventoryButton
+import com.example.trip_to_hyeonchungsa.tthLib.InventoryManager
 import com.example.trip_to_hyeonchungsa.tthLib.rememberScreenTransitionState
 
 // 실제 MainActivity 클래스
@@ -23,6 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Main()
+            InventoryButton { }
         }
     }
 }
@@ -38,6 +44,7 @@ fun Screen1_1_Greeting(onNext: () -> Unit = {}) {
             content = "일제 강점기 때 현충사가 완전히 사라지게 될 뻔한 것에 대해 알고 있니?",
             onClick = onNext
         )
+        InventoryManager.clear()
     }
 }
 
@@ -82,19 +89,19 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
 fun Screen2_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "navi",
         onClick = onNext){
-    // 나침반 표시
-    Compass(
-        destinationLat = 36.929529,
-        destinationLon = 127.043517
-    ) {
-        // 나침반 위에 퀘스트 표시
-        QuestDisplay(
-            questTitle = "현충사 기념관 방문",
-            questContent = "나침반을 따라 현충사 기념관으로 이동하세요",
-            questDetailContent = "20m 이내에 도착하면 자동으로 다음 화면으로 넘어갑니다"
-        )
-    }
+        // 나침반 표시
+        Compass(
+            destinationLat = 36.929529,
+            destinationLon = 127.043517
+        ) {
+            // 나침반 위에 퀘스트 표시
+            QuestDisplay(
+                questTitle = "현충사 기념관 방문",
+                questContent = "나침반을 따라 현충사 기념관으로 이동하세요",
+                questDetailContent = "20m 이내에 도착하면 자동으로 다음 화면으로 넘어갑니다"
+            )
         }
+    }
 }
 
 
@@ -142,25 +149,43 @@ fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true) // 현판 찾고 잔 찾기
 @Composable
 fun Screen3_1_Greeting(onNext: () -> Unit = {}) {
+    var a = false
     SetBackground(imageName = "pan") {
         Bubble(
             name = "누이",
             content = "오! 찾았구나 이 현판은 숙종 임금이 직접 쓴 것으로 구현충사에 걸려 있던거야 그럼 복숭아 모양처럼 생긴 잔 을 찾아볼까? 이 근처에 있어!",
-            onClick = onNext
+            onClick = {
+                a = true
+                if (a == true) {
+                    InventoryManager.add(4)
+                    onNext()
+                }
+            }
         )
+
+
     }
 }
 
 @Preview(showBackground = true) // 잔 찾고 설명
 @Composable
 fun Screen3_2_Greeting(onNext: () -> Unit = {}) {
+    var b = false
     SetBackground(imageName = "cup") {
-        Bubble(
-            name = "오라비",
-            content = "잘 찾았어 이 복숭아 모양 술잔은 난중일기의 ‘화주배 한 쌍’으로 추정되는 얇은 금도금 술잔으로",
-            onClick = onNext
-        )
     }
+    Bubble(
+        name = "오라비",
+        content = "잘 찾았어 이 복숭아 모양 술잔은 난중일기의 ‘화주배 한 쌍’으로 추정되는 얇은 금도금 술잔으로",
+        onClick = {
+            b = true
+            if (b == true) {
+                InventoryManager.add(5)
+                onNext()
+
+            }
+        }
+    )
+
 }
 
 @Preview(showBackground = true) // 임진일기 찾기
@@ -215,6 +240,7 @@ fun Screen3_4_Greeting(onNext: () -> Unit = {}) {
             Choice("사천.당포", "명량.노량") { selectedOption ->
                 // 선택된 옵션: 1 = "사천.당포", 2 = "명량.노량"
                 if (selectedOption == 1) {
+                    InventoryManager.add(2)
                     onNext() // 정답이면 다음 화면으로
                 } else if (selectedOption == 2) {
                     showAgainImage = true  // 오답이면 어게인 이미지 표시
@@ -233,7 +259,7 @@ fun Screen3_5_Greeting(onNext: () -> Unit = {}) {
             name = "오누이",
             content = """ 맞아 정답은 사천, 당포이야
  임진일기에는 그 밖의 공문이나 편지도 수록되어 있어.
- 자, 그럼 왜군(일본군)이 사용한 조총을 찾아보자
+ 자, 그럼 일본군이 사용한 조총을 찾아보자
                    """.trimIndent(),
             onClick = onNext
         )
@@ -243,14 +269,21 @@ fun Screen3_5_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true) // 조총 설명 하고 거북선 그림 찾기
 @Composable
 fun Screen3_6_Greeting(onNext: () -> Unit = {}) {
+    var c = false
     SetBackground(imageName = "gun") {
         Bubble(
             name = "오라비",
-            content = """ 조총은 총배에 화약과 탄을 넣고 화승(느리게 타는 끈)에 불을 붙여 방아쇠를 당겨 발화시키는 방식인 총이야 
-이제 거북선(그림)을 찾으러 가자!
-거북선(그림),(모형) 찾으면 과거로 갈 수 있어!
+            content = """ 조총은 총배에 화약과 탄을 넣고 끈에 불을 붙여 발화시키는 방식인 총이야 
+이제 거북선그림을 찾으러 가자!
+거북선을 찾으면 과거로 갈 수 있어!
                    """.trimIndent(),
-            onClick = onNext
+            onClick = {
+                c = true
+                if (c == true){
+                    InventoryManager.add(6)
+                    onNext()
+                }
+            }
         )
     }
 }
@@ -259,6 +292,7 @@ fun Screen3_6_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true) // 거북선 그림 설명
 @Composable
 fun Screen3_7_Greeting(onNext: () -> Unit = {}) {
+    var d = false
     SetBackground(imageName = "turtle") {
         Bubble(
             name = "누이",
@@ -266,7 +300,13 @@ fun Screen3_7_Greeting(onNext: () -> Unit = {}) {
 거북선은 조선 시대 임진왜란(1592~ 1598) 때 사용한 전투용 군함이야
 
                    """.trimIndent(),
-            onClick = onNext
+            onClick = {
+                d = true
+                if (d == true) {
+                    InventoryManager.add(1)
+                    onNext()
+                }
+            }
         )
     }
 }
@@ -278,10 +318,13 @@ fun Screen3_8_Greeting(onNext: () -> Unit = {}) {
         Bubble(
             name = "오누이",
             content = """
- 드디어 다 찾았어! 이제 정려로 가기 위해서 준비는 다 했어
+ 드디어 다 찾았어!
 
                    """.trimIndent(),
-            onClick = onNext
+            onClick = {
+
+                onNext()
+            }
         )
     }
 }
@@ -290,44 +333,6 @@ fun Screen3_8_Greeting(onNext: () -> Unit = {}) {
 //기념관 퀘스트
 
 
-@Preview(showBackground = true)
-@Composable
-fun Screen6_1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "pan") {
-        Bubble(
-            name = "누이",
-            content = "오! 찾았구나 이 현판은 이 현판은 숙종 임금이 직접 쓴 것으로 구현충사에 걸려 있던거야 그럼 복숭아 모양처럼 생긴 잔 을 찾아볼까? 이 근처에 있어!",
-            onClick = onNext
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Screen6_2_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "cup") {
-        Bubble(
-            name = "오라비",
-            content = "잘 찾았어 이 복숭아 모양 술잔은 난중일기의 ‘화주배 한 쌍’으로 추정되는 얇은 금도금 술잔으로",
-            onClick = onNext
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Screen6_3_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "cup") {
-        Bubble(
-            name = "오라비",
-            content = """
-                지금은 손잡이 조각의 깊은 홈에서만 금 흔적이 남아 있어
-                그럼 다음 임진일기를 찾아보자 근처에 있으니 찾아보자! 
-                    """.trimIndent(),
-            onClick = onNext
-        )
-    }
-}
 
 //정려이동 퀘스트
 @Preview(showBackground = true)
@@ -443,7 +448,7 @@ fun Screen7_9_Greeting(onNext: () -> Unit = {}) {
 @Composable
 fun Screen8_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "hal") {
-         Bubble(
+        Bubble(
             name = "할아버지",
             content = "자네 왜? 여기에 왔는가?",
             onClick = onNext
@@ -482,7 +487,10 @@ fun Screen8_4_Greeting(onNext: () -> Unit = {}) {
         Bubble(
             name = "할아버지",
             content = "그럼 너가 기념관에서 찾은 유물을 주렴",
-            onClick = onNext
+            onClick = {
+                InventoryManager.clear()
+                onNext()
+            }
         )
     }
 }
@@ -551,10 +559,10 @@ fun Screen8_9_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun Screen9_1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "yee_hal") {
+    SetBackground(imageName = "wood_cach") {
         Bubble(
-            name = "이순신",
-            content = "이곳까지 오는데 정말 수고했네..",
+            name = "윤정선",
+            content = "거기 젊으니 혹시 나무좀 해와줄 수 있는가?",
             onClick = onNext
         )
     }
@@ -563,6 +571,176 @@ fun Screen9_1_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun Screen9_2_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "wood_cach") {
+        Bubble(
+            name = "플레이어",
+            content = "네 알겠습니다.",
+            onClick = onNext
+        )
+    }
+}
+
+//나무를 해온다.
+@Preview(showBackground = true)
+@Composable
+fun Screen9_3_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "wood_cach") {
+        Bubble(
+            name = "플레이어",
+            content = "여기 나무요.",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen9_4_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "wood_cach") {
+        Bubble(
+            name = "윤정선",
+            content = "고맙네 젊으니.",
+            onClick = onNext
+        )
+    }
+}
+
+//부채 찾아주기
+@Preview(showBackground = true)
+@Composable
+fun Screen9_5_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "bu_chae") {
+        Bubble(
+            name = "심예택",
+            content = "거기 자네 내 부채좀 찾아줄 수 있나?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen9_6_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "bu_chae") {
+        Bubble(
+            name = "플레이어",
+            content = "네 알겠습니다.",
+            onClick = onNext
+        )
+    }
+}
+//부채를 찾는다.
+@Preview(showBackground = true)
+@Composable
+fun Screen9_7_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "bu_chae") {
+        Bubble(
+            name = "플레이어",
+            content = "여기 부채 찾았어요!",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen9_8_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "bu_chae") {
+        Bubble(
+            name = "심예택",
+            content = "정말 고맙네 복받을거야.",
+            onClick = onNext
+        )
+    }
+}
+
+//안마(코지마)
+@Preview(showBackground = true)
+@Composable
+fun Screen9_9_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "park_won") {
+        Bubble(
+            name = "박원삼",
+            content = "거기 젊은이 지금 내가 어깨가 아파서 그런데 어깨좀 주물러 줄 수 있나?",
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen9_10_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "park_won") {
+        Bubble(
+            name = "플레이어",
+            content = "네 알겠습니다.",
+            onClick = onNext
+        )
+    }
+}
+
+//어깨 주물러줌 :)
+@Preview(showBackground = true)
+@Composable
+fun Screen9_11_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "park_won") {
+        Bubble(
+            name = "박원삼",
+            content = "덕분에 수셨던 곳이 시원해 졌구만 고맙네 젊은이",
+            onClick = onNext
+        )
+    }
+}
+
+//water
+@Preview(showBackground = true)
+@Composable
+fun Screen9_12_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "yee") {
+        Bubble(
+            name = "이준규",
+            content = "너무 목이 마른데 물 한잔만 가져다주게",
+            onClick = onNext
+        )
+    }
+}
+
+//물 가져다줌
+@Preview(showBackground = true)
+@Composable
+fun Screen9_13_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "yee") {
+        Bubble(
+            name = "이준규",
+            content = "고맙네 덕분에 살았어.",
+            onClick = onNext
+        )
+    }
+}
+
+
+
+
+
+
+
+
+//이순신 고택 퀘스트
+@Preview(showBackground = true)
+@Composable
+fun Screen10_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "yee_hal") {
+        Bubble(
+            name = "이순신",
+            content = "이곳까지 오는데 정말 수고했네..",//?????
+            onClick = onNext
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen10_2_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_hal") {
         Bubble(
             name = "이순신",
@@ -574,7 +752,7 @@ fun Screen9_2_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen9_3_Greeting(onNext: () -> Unit = {}) {
+fun Screen10_3_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_hal") {
         Bubble(
             name = "이순신",
@@ -586,7 +764,7 @@ fun Screen9_3_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen9_4_Greeting(onNext: () -> Unit = {}) {
+fun Screen10_4_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_hal") {
         Bubble(
             name = "플레이어",
@@ -600,7 +778,7 @@ fun Screen9_4_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen10_1_Greeting(onNext: () -> Unit = {}) {
+fun Screen11_1_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_ramyon") {
         Bubble(
             name = "이면공",
@@ -612,7 +790,7 @@ fun Screen10_1_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen10_2_Greeting(onNext: () -> Unit = {}) {
+fun Screen11_2_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_ramyon") {
         Bubble(
             name = "플레이어",
@@ -624,7 +802,7 @@ fun Screen10_2_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen10_3_Greeting(onNext: () -> Unit = {}) {
+fun Screen11_3_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_ramyon") {
         Bubble(
             name = "이면공",
@@ -636,11 +814,11 @@ fun Screen10_3_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen10_4_Greeting(onNext: () -> Unit = {}) {
+fun Screen11_4_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_ramyon") {
         Bubble(
             name = "이면공",
-            content = "[눈물을 흘리며] 아버지께서... 소인은 그저, 아버지께서 나라를 구하셨듯이 가족을 지킨 것 뿐이온데... 어찌 아버지께서 이런생각을...",
+            content = "어찌 아버지께서 이런생각을...",
             onClick = onNext
         )
     }
@@ -648,55 +826,37 @@ fun Screen10_4_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun Screen10_5_Greeting(onNext: () -> Unit = {}) {
+fun Screen11_5_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "yee_ramyon") {
         Bubble(
             name = "이면공",
-            content = "...현충사에 가게 되면 영정이 하나 있을것이오. 영정 앞에서 참배를 하여 아버지를 향한 나의 마음을 전해주었으면 하네",
+            content = "현충사에 가게 되면 영정이 하나 있을것이오. 그곳에서 아버지를 향한 나의 마음을 전해주었으면 하네",
             onClick = onNext
         )
-    }
-}
-
-//현충사 사진찍기
-@Preview(showBackground = true)
-@Composable
-fun Screen11_1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "Yaesi") {
-        SetBackground(imageName = "") { }
-    }
-}
-
-//사진을 찍으면
-@Preview(showBackground = true)
-@Composable
-fun Screen11_2_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "nachim") {
-        SetBackground(imageName = "") { }
-    }
-}
-
-//나침반 가져감
-@Preview(showBackground = true)
-@Composable
-fun Screen11_3_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "HYON") {
-        SetBackground(imageName = "") { }
     }
 }
 
 //그리고 구현충사 가고 구현충사 지식알려주면 됨 :) 구 현충사 지식?
-//마지막
 @Preview(showBackground = true)
 @Composable
-fun Screen12_1_Greeting(onNext: () -> Unit = {}) {
-    SetBackground(imageName = "END") {
+fun Screen13_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "end") {
         Bubble(
             name = "사람들",
             content = "고마워 네가 우리 현충사를 구했어",
             onClick = onNext
         )
-        SetBackground(imageName = "") { }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Screen14_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "black") {
+        EndingCredits(
+            "구 현충사는 일제강점기인\n\n\n 1932년에 중건되었습니다.\n\n\n 당시 이순신 장군의 묘소와 위토(제사 비용 마련을 위한 땅)가\n\n\n 경매로 넘어갈 위기에 처하자,\n\n\n 전국 각지에서 우리 동포들이\n\n\n 성금을 모아\n\n\n 빚을 갚고\n\n\n 이 사당을 다시 지었습니다.\n\n\n 즉, 일제에 맞서\n\n\n 우리 민족의 자긍심을 지켜낸\n\n\n 상징과도 같은 건물입니다\n",
+
+            )
     }
 }
 
@@ -722,53 +882,67 @@ fun Main() {
             { Screen3_3_Greeting{ transitionState.goTo(10, TransitionType.SCALE) } },
             { Screen3_4_Greeting{ transitionState.goTo(11, TransitionType.SCALE) } },
             { Screen3_5_Greeting{ transitionState.goTo(12, TransitionType.SCALE) } },
-            { Screen3_5_Greeting{ transitionState.goTo(13, TransitionType.SCALE) } },
-            { Screen3_6_Greeting{ transitionState.goTo(14, TransitionType.SCALE) } },
-            { Screen3_7_Greeting{ transitionState.goTo(15, TransitionType.SCALE) } },
-            { Screen3_8_Greeting{ transitionState.goTo(16, TransitionType.SCALE) } },
+            { Screen3_6_Greeting{ transitionState.goTo(13, TransitionType.SCALE) } },
+            { Screen3_7_Greeting{ transitionState.goTo(14, TransitionType.SCALE) } },
+            { Screen3_8_Greeting{ transitionState.goTo(15, TransitionType.SCALE) } },
+
 
             //기념관 퀘스트
 
             //정려이동 퀘스트
-            { Screen7_1_Greeting{ transitionState.goTo(17, TransitionType.SCALE) } },
-            { Screen7_2_Greeting{ transitionState.goTo(18, TransitionType.SCALE) } },
-            { Screen7_3_Greeting{ transitionState.goTo(19, TransitionType.SCALE) } },
-            { Screen7_4_Greeting{ transitionState.goTo(20, TransitionType.SCALE) } },
-            { Screen7_5_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
-            { Screen7_6_Greeting{ transitionState.goTo(22, TransitionType.SCALE) } },
-            { Screen7_7_Greeting{ transitionState.goTo(23, TransitionType.SCALE) } },
-            { Screen7_8_Greeting{ transitionState.goTo(24, TransitionType.SCALE) } },
-            { Screen7_9_Greeting{ transitionState.goTo(25, TransitionType.SCALE) } },
+            { Screen7_1_Greeting{ transitionState.goTo(16, TransitionType.SCALE) } },
+            { Screen7_2_Greeting{ transitionState.goTo(17, TransitionType.SCALE) } },
+            { Screen7_3_Greeting{ transitionState.goTo(18, TransitionType.SCALE) } },
+            { Screen7_4_Greeting{ transitionState.goTo(19, TransitionType.SCALE) } },
+            { Screen7_5_Greeting{ transitionState.goTo(20, TransitionType.SCALE) } },
+            { Screen7_6_Greeting{ transitionState.goTo(21, TransitionType.SCALE) } },
+            { Screen7_7_Greeting{ transitionState.goTo(22, TransitionType.SCALE) } },
+            { Screen7_8_Greeting{ transitionState.goTo(23, TransitionType.SCALE) } },
+            { Screen7_9_Greeting{ transitionState.goTo(24, TransitionType.SCALE) } },
 
             //할아버지와의 대화
-            { Screen8_1_Greeting{ transitionState.goTo(26, TransitionType.SCALE) } },
-            { Screen8_2_Greeting{ transitionState.goTo(27, TransitionType.SCALE) } },
-            { Screen8_3_Greeting{ transitionState.goTo(28, TransitionType.SCALE) } },
-            { Screen8_4_Greeting{ transitionState.goTo(29, TransitionType.SCALE) } },
-            { Screen8_5_Greeting{ transitionState.goTo(30, TransitionType.SCALE) } },
-            { Screen8_6_Greeting{ transitionState.goTo(31, TransitionType.SCALE) } },
-            { Screen8_7_Greeting{ transitionState.goTo(32, TransitionType.SCALE) } },
-            { Screen8_8_Greeting{ transitionState.goTo(33, TransitionType.SCALE) } },
-            { Screen8_9_Greeting{ transitionState.goTo(34, TransitionType.SCALE) } },
+            { Screen8_1_Greeting{ transitionState.goTo(25, TransitionType.SCALE) } },
+            { Screen8_2_Greeting{ transitionState.goTo(26, TransitionType.SCALE) } },
+            { Screen8_3_Greeting{ transitionState.goTo(27, TransitionType.SCALE) } },
+            { Screen8_4_Greeting{ transitionState.goTo(28, TransitionType.SCALE) } },
+            { Screen8_5_Greeting{ transitionState.goTo(29, TransitionType.SCALE) } },
+            { Screen8_6_Greeting{ transitionState.goTo(30, TransitionType.SCALE) } },
+            { Screen8_7_Greeting{ transitionState.goTo(31, TransitionType.SCALE) } },
+            { Screen8_8_Greeting{ transitionState.goTo(32, TransitionType.SCALE) } },
+            { Screen8_9_Greeting{ transitionState.goTo(33, TransitionType.SCALE) } },
 
-            //이순신 고택 퀘스트
-            { Screen9_1_Greeting{ transitionState.goTo(35, TransitionType.SCALE) } },
-            { Screen9_2_Greeting{ transitionState.goTo(36, TransitionType.SCALE) } },
-            { Screen9_3_Greeting{ transitionState.goTo(37, TransitionType.SCALE) } },
-            { Screen9_4_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
+            //행인 퀘스트
+            { Screen9_1_Greeting{ transitionState.goTo(34, TransitionType.SCALE) } },
+            { Screen9_2_Greeting{ transitionState.goTo(35, TransitionType.SCALE) } },
+            { Screen9_3_Greeting{ transitionState.goTo(36, TransitionType.SCALE) } },
+            { Screen9_4_Greeting{ transitionState.goTo(37, TransitionType.SCALE) } },
+            { Screen9_5_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
+            { Screen9_6_Greeting{ transitionState.goTo(39, TransitionType.SCALE) } },
+            { Screen9_7_Greeting{ transitionState.goTo(40, TransitionType.SCALE) } },
+            { Screen9_8_Greeting{ transitionState.goTo(41, TransitionType.SCALE) } },
+            { Screen9_9_Greeting{ transitionState.goTo(42, TransitionType.SCALE) } },
+            { Screen9_10_Greeting{ transitionState.goTo(43, TransitionType.SCALE) } },
+            { Screen9_11_Greeting{ transitionState.goTo(44, TransitionType.SCALE) } },
+            { Screen9_12_Greeting{ transitionState.goTo(45, TransitionType.SCALE) } },
+            { Screen9_13_Greeting{ transitionState.goTo(46, TransitionType.SCALE) } },
 
-            //이면공 퀘스트
-            { Screen10_1_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
-            { Screen10_2_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
-            { Screen10_3_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
-            { Screen10_4_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
-            { Screen10_5_Greeting{ transitionState.goTo(38, TransitionType.SCALE) } },
-            //현충사
-            { Screen11_1_Greeting{ transitionState.goTo(39, TransitionType.SCALE) } },
-            { Screen11_2_Greeting{ transitionState.goTo(40, TransitionType.SCALE) } },
-            { Screen11_3_Greeting{ transitionState.goTo(41, TransitionType.SCALE) } },
+            //이순신 퀘스트
+            { Screen10_1_Greeting{ transitionState.goTo(47, TransitionType.SCALE) } },
+            { Screen10_2_Greeting{ transitionState.goTo(48, TransitionType.SCALE) } },
+            { Screen10_3_Greeting{ transitionState.goTo(49, TransitionType.SCALE) } },
+            { Screen10_4_Greeting{ transitionState.goTo(50, TransitionType.SCALE) } },
 
+            //이면공
+            { Screen11_1_Greeting{ transitionState.goTo(51, TransitionType.SCALE) } },
+            { Screen11_2_Greeting{ transitionState.goTo(52, TransitionType.SCALE) } },
+            { Screen11_3_Greeting{ transitionState.goTo(53, TransitionType.SCALE) } },
+            { Screen11_4_Greeting{ transitionState.goTo(54, TransitionType.SCALE) } },
+            { Screen11_5_Greeting{ transitionState.goTo(55, TransitionType.SCALE) } },
 
-        )
+            //끝
+            { Screen13_1_Greeting{ transitionState.goTo(56, TransitionType.SCALE) } },
+            { Screen14_1_Greeting{ transitionState.goTo(57, TransitionType.SCALE) } },
+
+            )
     )
 }
