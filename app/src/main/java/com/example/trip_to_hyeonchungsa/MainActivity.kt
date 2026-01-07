@@ -6,10 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.trip_to_hyeonchungsa.tthLib.Bubble
+import com.example.trip_to_hyeonchungsa.tthLib.Character
+import com.example.trip_to_hyeonchungsa.tthLib.Choice
 import com.example.trip_to_hyeonchungsa.tthLib.Compass
+import com.example.trip_to_hyeonchungsa.tthLib.ImageSensing
+import com.example.trip_to_hyeonchungsa.tthLib.QuestDisplay
 import com.example.trip_to_hyeonchungsa.tthLib.SetBackground
 import com.example.trip_to_hyeonchungsa.tthLib.ScreenTransitionManager
 import com.example.trip_to_hyeonchungsa.tthLib.TransitionType
+import com.example.trip_to_hyeonchungsa.tthLib.rememberScreenTransitionState
 import com.example.trip_to_hyeonchungsa.tthLib.rememberScreenTransitionState
 
 // 실제 MainActivity 클래스
@@ -74,11 +79,24 @@ fun Screen1_4_Greeting(onNext: () -> Unit = {}) {
 
 @Preview(showBackground = true) // 기념관 가기 위한 나침반
 @Composable
-fun Screen2_1_Greeting(/*onNext: () -> Unit = {}*/) {
-    SetBackground(imageName = "navi") {
-        //Compass(37.5665, 126.9780)
+fun Screen2_1_Greeting(onNext: () -> Unit = {}) {
+    SetBackground(imageName = "navi",
+        onClick = onNext){
+    // 나침반 표시
+    Compass(
+        destinationLat = 36.929529,
+        destinationLon = 127.043517
+    ) {
+        // 나침반 위에 퀘스트 표시
+        QuestDisplay(
+            questTitle = "현충사 기념관 방문",
+            questContent = "나침반을 따라 현충사 기념관으로 이동하세요",
+            questDetailContent = "20m 이내에 도착하면 자동으로 다음 화면으로 넘어갑니다"
+        )
     }
+        }
 }
+
 
 @Preview(showBackground = true)  // 기념관 앞 미션 제공
 @Composable
@@ -95,14 +113,30 @@ fun Screen2_2_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true) // 현판 힌트
 @Composable
 fun Screen2_3_Greeting(onNext: () -> Unit = {}) {
+    var showQuest by remember { mutableStateOf(false) }
+
     SetBackground(imageName = "give") {
-        Bubble(
-            name = "누이",
-            content = "현판은 입구 근처에 있어 찾아봐!",
-            onClick = onNext
-        )
+        if (!showQuest) {
+            Bubble(
+                name = "누이",
+                content = "현판은 입구 근처에 있어 찾아봐!",
+                onClick = { showQuest = true }
+            )
+        } else {
+            QuestDisplay(
+                "현충사 현판을 찾아라",
+                "현충사의 현판을 찾아 스캔하자",
+                "현충사의 현판을 찾아 AR로 스캔하여 인식해 주세요"
+            ) {
+                if (ImageSensing("").value == true) {
+                    onNext()
+                }
+            }
+        }
     }
 }
+
+
 
 @Preview(showBackground = true) // 현판 찾고 잔 찾기
 @Composable
@@ -146,16 +180,47 @@ fun Screen3_3_Greeting(onNext: () -> Unit = {}) {
 @Preview(showBackground = true) // 임진일기 힌트
 @Composable
 fun Screen3_4_Greeting(onNext: () -> Unit = {}) {
+    var showChoice by remember { mutableStateOf(false) }
+    var showAgainImage by remember { mutableStateOf(false) }
+
     SetBackground(imageName = "history_book") {
-        Bubble(
-            name = "누이",
-            content = """
+        if (showAgainImage) {
+            // 어게인 이미지를 Character 함수로 화면 중앙에 표시
+            Character(
+                horizontalPosition = 50,  // 가로 중앙 (0~100)
+                verticalPosition = 50,     // 세로 중앙 (0~100)
+                size = 400,                // 이미지 크기
+                brightness = 100,          // 명도 (보통)
+                imageName = "again"        // 이미지 파일명
+            )
+
+            // 3초 후 이미지 제거
+            LaunchedEffect(Unit) {
+                kotlinx.coroutines.delay(3000)
+                showAgainImage = false
+                showChoice = false  // 선택지를 다시 보여주기 위해 초기화
+            }
+        } else if (!showChoice) {
+            Bubble(
+                name = "누이",
+                content = """
                 암호를 해독하면 임진일기를 얻을 수 있어!
                 암호는 ■■ 해전 과 ■■ 해전 당시 함대의 기동과 전투 경위등이 기술되어 있다
                 빈칸이 뭔지 생각해봐
                     """.trimIndent(),
-            onClick = onNext
-        )
+                onClick = { showChoice = true }
+            )
+        } else {
+            Choice("사천.당포", "명량.노량") { selectedOption ->
+                // 선택된 옵션: 1 = "사천.당포", 2 = "명량.노량"
+                if (selectedOption == 1) {
+                    onNext() // 정답이면 다음 화면으로
+                } else if (selectedOption == 2) {
+                    showAgainImage = true  // 오답이면 어게인 이미지 표시
+                }
+
+            }
+        }
     }
 }
 
@@ -165,7 +230,7 @@ fun Screen3_5_Greeting(onNext: () -> Unit = {}) {
     SetBackground(imageName = "history_book") {
         Bubble(
             name = "오누이",
-            content = """ 맞아 정답은 명량, 노량이야
+            content = """ 맞아 정답은 사천, 당포이야
  임진일기에는 그 밖의 공문이나 편지도 수록되어 있어.
  자, 그럼 왜군(일본군)이 사용한 조총을 찾아보자
                    """.trimIndent(),
@@ -649,7 +714,7 @@ fun Main() {
             { Screen1_2_Greeting { transitionState.goTo(2, TransitionType.SLIDE_LEFT) } },
             { Screen1_3_Greeting { transitionState.goTo(3, TransitionType.SCALE) } },
             {Screen1_4_Greeting { transitionState.goTo(4, TransitionType.SCALE) } },
-            //{ Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
+            { Screen2_1_Greeting{ transitionState.goTo(5, TransitionType.SCALE) } },
             { Screen2_2_Greeting{ transitionState.goTo(6, TransitionType.SCALE) } },
             { Screen2_3_Greeting{ transitionState.goTo(7, TransitionType.SCALE) } },
             { Screen3_1_Greeting{ transitionState.goTo(8, TransitionType.SCALE) } },
@@ -707,4 +772,3 @@ fun Main() {
         )
     )
 }
-

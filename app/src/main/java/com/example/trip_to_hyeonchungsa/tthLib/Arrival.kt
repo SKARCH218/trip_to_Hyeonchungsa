@@ -1,8 +1,10 @@
-package com.example.trip_to_hyeonchungsa
+package com.example.trip_to_hyeonchungsa.tthLib
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -16,13 +18,6 @@ import kotlin.math.sqrt
 /**
  * 목적지 도착 여부를 확인하는 함수
  * 현재 위치를 자동으로 측정하여 목적지와 비교합니다.
- * 
- * 다른 파일에서 사용 예시:
- * ```
- * import com.example.arrival.Arrival
- * 
- * val result = Arrival(context, 37.5665, 126.9780)
- * ```
  * 
  * @param context Android Context (위치 서비스 접근에 필요)
  * @param targetLatitude 목적지 위도
@@ -81,4 +76,76 @@ suspend fun Arrival(
     } catch (e: Exception) {
         null // 오류 발생
     }
+}
+
+/**
+ * 🎯 Compose에서 쉽게 사용하는 도착 감지 함수
+ *
+ * 사용법:
+ * ```
+ * CheckArrival(
+ *     latitude = 36.92906,
+ *     longitude = 127.0426,
+ *     onArrived = { /* 도착했을 때 실행할 코드 */ }
+ * )
+ * ```
+ *
+ * @param latitude 목적지 위도
+ * @param longitude 목적지 경도
+ * @param thresholdMeters 도착 판정 거리 (기본값: 10m)
+ * @param onArrived 도착했을 때 실행할 콜백
+ * @param onNotArrived 도착하지 않았을 때 실행할 콜백 (선택)
+ * @param onError 위치를 가져올 수 없을 때 실행할 콜백 (선택)
+ */
+@Composable
+fun CheckArrival(
+    latitude: Double,
+    longitude: Double,
+    thresholdMeters: Double = 10.0,
+    onArrived: () -> Unit = {},
+    onNotArrived: () -> Unit = {},
+    onError: () -> Unit = {}
+) {
+    val context = LocalContext.current
+
+    LaunchedEffect(latitude, longitude) {
+        when (val result = Arrival(context, latitude, longitude, thresholdMeters)) {
+            true -> onArrived()
+            false -> onNotArrived()
+            null -> onError()
+        }
+    }
+}
+
+/**
+ * 🎯 도착 여부를 State로 반환하는 함수 (더 유연한 사용 가능)
+ *
+ * 사용법:
+ * ```
+ * val isArrived = rememberArrivalState(36.92906, 127.0426)
+ *
+ * if (isArrived.value == true) {
+ *     Text("도착했습니다!")
+ * }
+ * ```
+ *
+ * @param latitude 목적지 위도
+ * @param longitude 목적지 경도
+ * @param thresholdMeters 도착 판정 거리 (기본값: 10m)
+ * @return State<Boolean?> - true: 도착, false: 미도착, null: 오류
+ */
+@Composable
+fun rememberArrivalState(
+    latitude: Double,
+    longitude: Double,
+    thresholdMeters: Double = 10.0
+): State<Boolean?> {
+    val context = LocalContext.current
+    val arrivalState = remember { mutableStateOf<Boolean?>(null) }
+
+    LaunchedEffect(latitude, longitude) {
+        arrivalState.value = Arrival(context, latitude, longitude, thresholdMeters)
+    }
+
+    return arrivalState
 }

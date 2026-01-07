@@ -28,7 +28,8 @@ import com.example.trip_to_hyeonchungsa.R
 @Composable
 fun Compass(
     destinationLat: Double,
-    destinationLon: Double
+    destinationLon: Double,
+    content: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
     var bearing by remember { mutableStateOf(0f) }
@@ -129,5 +130,8 @@ fun Compass(
                 .fillMaxSize()
                 .rotate(bearing - currentAzimuth)
         )
+
+        // 나침반 위에 표시할 추가 컨텐츠
+        content()
     }
 }
